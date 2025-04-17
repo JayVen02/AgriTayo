@@ -1,18 +1,19 @@
 # AgriTayo
 Our APAC Solution Challenge Applications, AgriTayo (Lets do aggriculture)
 
-- flutter doctor
+### Run flutter doctor to ensure your environment is set up correctly.
 
 ## Dependencies
-### Flame
+### Flame & Firebase (Flutter Packages)
 - flutter pub add flame
-
-### Firebase
-- npm install -g firebase-tools
-- firebase login (login using your google account)
 - flutter pub add firebase_core
 - flutter pub add firebase_auth
 - flutter pub add cloud_firestore
+
+### Firebase
+- npm install -g firebase-tools
+- firebase login
+
 
 
 ## Run the Application
