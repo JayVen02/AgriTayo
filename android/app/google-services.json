@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "390173527714",
+    "project_id": "agritayo-608e7",
+    "storage_bucket": "agritayo-608e7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:390173527714:android:1e1637841dbf3c831311fb",
+        "android_client_info": {
+          "package_name": "com.example.agritayo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpEmbOym_Nbr7oRGbqOkwtX1Ot1ZwlRns"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
