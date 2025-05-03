@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">866206524699-ghaocefhjjvgf241c3jp6hh8ad8f9nlh.apps.googleusercontent.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">866206524699</string>
+    <string name="google_api_key" translatable="false">AIzaSyCR8HViGIoYY8Ah4uGgvV3t5o9InrcAMVA</string>
+    <string name="google_app_id" translatable="false">1:866206524699:android:ca1ad6b156fd2e77b75fbe</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyCR8HViGIoYY8Ah4uGgvV3t5o9InrcAMVA</string>
+    <string name="google_storage_bucket" translatable="false">agritayo-b7a22.firebasestorage.app</string>
+    <string name="project_id" translatable="false">agritayo-b7a22</string>
+</resources>
