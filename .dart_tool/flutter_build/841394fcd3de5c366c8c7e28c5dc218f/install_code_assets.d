@@ -1,0 +1,1 @@
+ C:\\Users\\Girlyver\\Downloads\\AgriTayo\\.dart_tool\\flutter_build\\841394fcd3de5c366c8c7e28c5dc218f\\native_assets.json: 
