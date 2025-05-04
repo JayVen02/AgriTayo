@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "866206524699-gsffju6c9bmd7cfehdbbh1k607j8tfo9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.company.agritayo",
+            "certificate_hash": "cb981e8689217ac0d56516ab05c64f7e49ae66d8"
+          }
+        },
+        {
           "client_id": "866206524699-ghaocefhjjvgf241c3jp6hh8ad8f9nlh.apps.googleusercontent.com",
           "client_type": 3
         }
