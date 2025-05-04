@@ -16,9 +16,7 @@ migrate_working_dir/
 
 # Flutter/Dart
 .dart_tool/
-.packages
 .pub/
-.pub-cache/
 build/
 .melos_tool/
 .flutter-plugins
@@ -31,9 +29,9 @@ android/.gradle/
 android/build/
 **/gradle-wrapper.jar
 .gradle/
-android/app/debug
-android/app/profile
-android/app/release
+android/app/debug/
+android/app/profile/
+android/app/release/
 
 # iOS/macOS
 ios/Flutter/Flutter.framework
@@ -49,8 +47,6 @@ macos/Flutter/ephemeral/
 
 # Firebase
 firebase.json
-firestore.indexes.json
-firestore.rules
 android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
 lib/firebase_options.dart
@@ -69,3 +65,7 @@ functions/.env
 # Symbolication / Obfuscation
 app.*.symbols
 app.*.map.json
+
+# Environment
+.env
+.env.*
