@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-// import 'dart:io'; // Uncomment if you're using exit(0)
+import 'dart:io';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -28,51 +28,36 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 40),
               Column(
                 children: [
-                  const Text(
-                    'AgriMarket',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Futehodo-MaruGothic_1.00',
-                      color: Color(0xFF404040),
-                    ),
-                  ),
-                  const SizedBox(height: 30), // <-- Space between title and buttons
-                  // Buttons stacked tightly
-                  MenuButton(
+                  const PressableText(text: 'AgriMarket'),
+                  const SizedBox(height: 30),
+                  PressableMenuButton(
                     text: 'Play Game',
                     onPressed: () {
                       Navigator.pushNamed(context, '/game');
                     },
                   ),
-                  MenuButton(
+                  const SizedBox(height: 2),
+                  PressableMenuButton(
                     text: 'Credits',
                     onPressed: () {
                       Navigator.pushNamed(context, '/credits');
                     },
                   ),
-                  MenuButton(
+                  const SizedBox(height: 2),
+                  PressableMenuButton(
                     text: 'Quit',
                     onPressed: () {
-                      // exit(0); // Uncomment if needed
+                      exit(0);
                     },
                   ),
                 ],
               ),
             ],
           ),
-          Positioned(
+          const Positioned(
             bottom: 20,
             right: 20,
-            child: GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, '/chatbot');
-              },
-              child: Image.asset(
-                'assets/images/Union.png',
-                height: 80,
-              ),
-            ),
+            child: ChatbotTap(),
           ),
         ],
       ),
@@ -80,28 +65,158 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class MenuButton extends StatelessWidget {
+class PressableMenuButton extends StatefulWidget {
   final String text;
   final VoidCallback onPressed;
 
-  const MenuButton({
+  const PressableMenuButton({
     super.key,
     required this.text,
     required this.onPressed,
   });
 
   @override
+  _PressableMenuButtonState createState() => _PressableMenuButtonState();
+}
+
+class _PressableMenuButtonState extends State<PressableMenuButton> {
+  bool _isPressed = false;
+
+  @override
   Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: onPressed,
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: Color(0xFF404040),
-          fontFamily: 'Futehodo-MaruGothic_1.00',
+    return GestureDetector(
+      onTapDown: (_) {
+        setState(() {
+          _isPressed = true;
+        });
+      },
+      onTapUp: (_) {
+        setState(() {
+          _isPressed = false;
+        });
+        widget.onPressed();
+      },
+      onTapCancel: () {
+        setState(() {
+          _isPressed = false;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 100),
+        transform: Matrix4.rotationZ(_isPressed ? 0.05 : 0),
+        transformAlignment: Alignment.center,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2),
+          child: Text(
+            widget.text,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: _isPressed ? Colors.white : const Color(0xFF404040),
+              fontFamily: 'Futehodo-MaruGothic_1.00',
+            ),
+          ),
         ),
+      ),
+    );
+  }
+}
+
+class PressableText extends StatefulWidget {
+  final String text;
+
+  const PressableText({super.key, required this.text});
+
+  @override
+  _PressableTextState createState() => _PressableTextState();
+}
+
+class _PressableTextState extends State<PressableText> {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) {
+        setState(() {
+          _isPressed = true;
+        });
+      },
+      onTapUp: (_) {
+        setState(() {
+          _isPressed = false;
+        });
+      },
+      onTapCancel: () {
+        setState(() {
+          _isPressed = false;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 100),
+        transform: Matrix4.rotationZ(_isPressed ? -0.10 : 0),
+        transformAlignment: Alignment.center,
+        child: Text(
+          widget.text,
+          style: TextStyle(
+            fontSize: 32,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Futehodo-MaruGothic_1.00',
+            color: _isPressed ? Colors.white : const Color(0xFF404040),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ChatbotTap extends StatefulWidget {
+  const ChatbotTap({super.key});
+
+  @override
+  _ChatbotTapState createState() => _ChatbotTapState();
+}
+
+class _ChatbotTapState extends State<ChatbotTap> {
+  bool _isPressed = false;
+
+  void _onTapDown(TapDownDetails details) {
+    setState(() {
+      _isPressed = true;
+    });
+  }
+
+  void _onTapUp(TapUpDetails details) {
+    setState(() {
+      _isPressed = false;
+    });
+    Navigator.pushNamed(context, '/chatbot');
+  }
+
+  void _onTapCancel() {
+    setState(() {
+      _isPressed = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: _onTapDown,
+      onTapUp: _onTapUp,
+      onTapCancel: _onTapCancel,
+      child: AnimatedCrossFade(
+        duration: const Duration(milliseconds: 150),
+        firstChild: Image.asset(
+          'assets/images/chatbot.png',
+          height: 80,
+        ),
+        secondChild: Image.asset(
+          'assets/images/chatbotHovered.png',
+          height: 80,
+        ),
+        crossFadeState:
+            _isPressed ? CrossFadeState.showSecond : CrossFadeState.showFirst,
       ),
     );
   }
