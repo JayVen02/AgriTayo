@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "866206524699",
+    "project_id": "agritayo-b7a22",
+    "storage_bucket": "agritayo-b7a22.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:866206524699:android:ca1ad6b156fd2e77b75fbe",
+        "android_client_info": {
+          "package_name": "com.company.agritayo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "866206524699-gsffju6c9bmd7cfehdbbh1k607j8tfo9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.company.agritayo",
+            "certificate_hash": "cb981e8689217ac0d56516ab05c64f7e49ae66d8"
+          }
+        },
+        {
+          "client_id": "866206524699-ghaocefhjjvgf241c3jp6hh8ad8f9nlh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCR8HViGIoYY8Ah4uGgvV3t5o9InrcAMVA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "866206524699-ghaocefhjjvgf241c3jp6hh8ad8f9nlh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "866206524699-9jnapmmp6k4lj9ob4ft8h5pbm7ppangu.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.agritayo"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
