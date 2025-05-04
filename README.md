@@ -14,13 +14,14 @@ Our APAC Solution Challenge Applications, AgriTayo (Lets do aggriculture)
 - npm install -g firebase-tools
 - firebase login
 
-
-
 ## Run the Application
 - flutter run
+
+## Run the Firebase Simulators (For testing Purposes)
+- firebase emulators: start
 
 ## Getting Started
 - [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
 - [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-[online documentation](https://docs.flutter.dev/)
+- [online documentation](https://docs.flutter.dev/)

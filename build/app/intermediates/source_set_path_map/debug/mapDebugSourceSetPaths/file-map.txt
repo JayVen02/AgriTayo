@@ -1,0 +1,41 @@
+com.company.agritayo.app-jetified-annotation-experimental-1.4.0-0 C:\Users\joven\.gradle\caches\8.10.2\transforms\0659a10c0402292aae294e3ab946627b\transformed\jetified-annotation-experimental-1.4.0\res
+com.company.agritayo.app-jetified-core-common-2.0.3-1 C:\Users\joven\.gradle\caches\8.10.2\transforms\0991706790e7b47c0f4f066f61424650\transformed\jetified-core-common-2.0.3\res
+com.company.agritayo.app-jetified-tracing-1.2.0-2 C:\Users\joven\.gradle\caches\8.10.2\transforms\16fc2fa718160d691beb09a29bdef1d5\transformed\jetified-tracing-1.2.0\res
+com.company.agritayo.app-jetified-firebase-common-21.0.0-3 C:\Users\joven\.gradle\caches\8.10.2\transforms\276d1b53ec30e066861d8a135a063d41\transformed\jetified-firebase-common-21.0.0\res
+com.company.agritayo.app-jetified-savedstate-1.2.1-4 C:\Users\joven\.gradle\caches\8.10.2\transforms\369cdd26b6f9854c2a910edf637025de\transformed\jetified-savedstate-1.2.1\res
+com.company.agritayo.app-jetified-startup-runtime-1.1.1-5 C:\Users\joven\.gradle\caches\8.10.2\transforms\3cc75d3a67b5d1732a4162346831f9a6\transformed\jetified-startup-runtime-1.1.1\res
+com.company.agritayo.app-jetified-lifecycle-viewmodel-savedstate-2.7.0-6 C:\Users\joven\.gradle\caches\8.10.2\transforms\3ee17bc10ff8d2bc70320858b5e01557\transformed\jetified-lifecycle-viewmodel-savedstate-2.7.0\res
+com.company.agritayo.app-jetified-lifecycle-process-2.7.0-7 C:\Users\joven\.gradle\caches\8.10.2\transforms\4b57e28a2881947fa6cb0c622c97359e\transformed\jetified-lifecycle-process-2.7.0\res
+com.company.agritayo.app-jetified-core-ktx-1.13.1-8 C:\Users\joven\.gradle\caches\8.10.2\transforms\4c36b141d8d811dc79615bfc3ea176d0\transformed\jetified-core-ktx-1.13.1\res
+com.company.agritayo.app-jetified-ads-adservices-1.1.0-beta11-9 C:\Users\joven\.gradle\caches\8.10.2\transforms\5d1e5b2c95473bc17054cf8681ed4fbf\transformed\jetified-ads-adservices-1.1.0-beta11\res
+com.company.agritayo.app-lifecycle-viewmodel-2.7.0-10 C:\Users\joven\.gradle\caches\8.10.2\transforms\65d1cbd19378de3dc862b075078f5580\transformed\lifecycle-viewmodel-2.7.0\res
+com.company.agritayo.app-core-runtime-2.2.0-11 C:\Users\joven\.gradle\caches\8.10.2\transforms\6abb4107a65c560329ab1044de518f55\transformed\core-runtime-2.2.0\res
+com.company.agritayo.app-lifecycle-runtime-2.7.0-12 C:\Users\joven\.gradle\caches\8.10.2\transforms\73c5585843be7e153bbabe738f83126f\transformed\lifecycle-runtime-2.7.0\res
+com.company.agritayo.app-jetified-ads-adservices-java-1.1.0-beta11-13 C:\Users\joven\.gradle\caches\8.10.2\transforms\789b96292e5fef0f491bfcd5ecc120dc\transformed\jetified-ads-adservices-java-1.1.0-beta11\res
+com.company.agritayo.app-jetified-play-services-auth-21.0.0-14 C:\Users\joven\.gradle\caches\8.10.2\transforms\7dba503e7135585e3d02c7d44531abc7\transformed\jetified-play-services-auth-21.0.0\res
+com.company.agritayo.app-jetified-core-1.0.0-15 C:\Users\joven\.gradle\caches\8.10.2\transforms\87f480a8f41b19264c90fddded528881\transformed\jetified-core-1.0.0\res
+com.company.agritayo.app-jetified-window-java-1.2.0-16 C:\Users\joven\.gradle\caches\8.10.2\transforms\9668162eb7499c3e62a116aa448d9f33\transformed\jetified-window-java-1.2.0\res
+com.company.agritayo.app-jetified-activity-1.8.1-17 C:\Users\joven\.gradle\caches\8.10.2\transforms\99c68d5f75589393d05471800c827920\transformed\jetified-activity-1.8.1\res
+com.company.agritayo.app-jetified-window-1.2.0-18 C:\Users\joven\.gradle\caches\8.10.2\transforms\b7c9824b0d966c5c47e92b2bb7d26c7f\transformed\jetified-window-1.2.0\res
+com.company.agritayo.app-jetified-play-services-basement-18.5.0-19 C:\Users\joven\.gradle\caches\8.10.2\transforms\b86b717a9cf7daa74f7f237368041d54\transformed\jetified-play-services-basement-18.5.0\res
+com.company.agritayo.app-jetified-credentials-play-services-auth-1.2.0-rc01-20 C:\Users\joven\.gradle\caches\8.10.2\transforms\bf133214d78452dc233c4760b80373e2\transformed\jetified-credentials-play-services-auth-1.2.0-rc01\res
+com.company.agritayo.app-jetified-credentials-1.2.0-rc01-21 C:\Users\joven\.gradle\caches\8.10.2\transforms\c3047a8c9f0752a3c5422269a31e6992\transformed\jetified-credentials-1.2.0-rc01\res
+com.company.agritayo.app-jetified-profileinstaller-1.3.1-22 C:\Users\joven\.gradle\caches\8.10.2\transforms\cc7bcf101922ec5bfb2ca2f88c68c42a\transformed\jetified-profileinstaller-1.3.1\res
+com.company.agritayo.app-jetified-play-services-base-18.5.0-23 C:\Users\joven\.gradle\caches\8.10.2\transforms\cd3cce4757deff6807498a55378679cf\transformed\jetified-play-services-base-18.5.0\res
+com.company.agritayo.app-browser-1.4.0-24 C:\Users\joven\.gradle\caches\8.10.2\transforms\d591c689528812745b6be5e840b230ce\transformed\browser-1.4.0\res
+com.company.agritayo.app-fragment-1.7.1-25 C:\Users\joven\.gradle\caches\8.10.2\transforms\dddbfa8300cc20dfbb8e92be67ede263\transformed\fragment-1.7.1\res
+com.company.agritayo.app-lifecycle-livedata-core-2.7.0-26 C:\Users\joven\.gradle\caches\8.10.2\transforms\e2193f487d59705810f0970727f7836d\transformed\lifecycle-livedata-core-2.7.0\res
+com.company.agritayo.app-core-1.13.1-27 C:\Users\joven\.gradle\caches\8.10.2\transforms\ec9f6378af43c92c3d06671637207c1f\transformed\core-1.13.1\res
+com.company.agritayo.app-debug-28 C:\Users\joven\Desktop\Personal Projects\Operation Debug\Project\agritayo\android\app\src\debug\res
+com.company.agritayo.app-main-29 C:\Users\joven\Desktop\Personal Projects\Operation Debug\Project\agritayo\android\app\src\main\res
+com.company.agritayo.app-pngs-30 C:\Users\joven\Desktop\Personal Projects\Operation Debug\Project\agritayo\build\app\generated\res\pngs\debug
+com.company.agritayo.app-res-31 C:\Users\joven\Desktop\Personal Projects\Operation Debug\Project\agritayo\build\app\generated\res\processDebugGoogleServices
+com.company.agritayo.app-resValues-32 C:\Users\joven\Desktop\Personal Projects\Operation Debug\Project\agritayo\build\app\generated\res\resValues\debug
+com.company.agritayo.app-packageDebugResources-33 C:\Users\joven\Desktop\Personal Projects\Operation Debug\Project\agritayo\build\app\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.company.agritayo.app-packageDebugResources-34 C:\Users\joven\Desktop\Personal Projects\Operation Debug\Project\agritayo\build\app\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.company.agritayo.app-debug-35 C:\Users\joven\Desktop\Personal Projects\Operation Debug\Project\agritayo\build\app\intermediates\merged_res\debug\mergeDebugResources
+com.company.agritayo.app-debug-36 C:\Users\joven\Desktop\Personal Projects\Operation Debug\Project\agritayo\build\cloud_firestore\intermediates\packaged_res\debug\packageDebugResources
+com.company.agritayo.app-debug-37 C:\Users\joven\Desktop\Personal Projects\Operation Debug\Project\agritayo\build\firebase_auth\intermediates\packaged_res\debug\packageDebugResources
+com.company.agritayo.app-debug-38 C:\Users\joven\Desktop\Personal Projects\Operation Debug\Project\agritayo\build\firebase_core\intermediates\packaged_res\debug\packageDebugResources
+com.company.agritayo.app-debug-39 C:\Users\joven\Desktop\Personal Projects\Operation Debug\Project\agritayo\build\firebase_storage\intermediates\packaged_res\debug\packageDebugResources
+com.company.agritayo.app-debug-40 C:\Users\joven\Desktop\Personal Projects\Operation Debug\Project\agritayo\build\google_sign_in_android\intermediates\packaged_res\debug\packageDebugResources
