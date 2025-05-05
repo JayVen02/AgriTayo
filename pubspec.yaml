@@ -27,6 +27,8 @@ dependencies:
   cloud_firestore: ^5.6.6
   provider: ^6.1.4
   google_sign_in: ^6.2.1
+  fl_chart: ^0.71.0
+  flutter_application_1: ^0.0.2
 
 dev_dependencies:
   flutter_test:
