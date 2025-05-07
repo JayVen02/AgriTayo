@@ -13,6 +13,7 @@ environment:
 # dependencies can be manually updated by changing the version numbers below to
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
+
 dependencies:
   flutter:
     sdk: flutter
@@ -56,6 +57,7 @@ flutter:
       - assets\images\AgriTayo - Logo.png
       - assets\images\Union.png
       - assets\images\Title Screen.png
+      - assets\images\Paper.png
       
 
   # An image asset can refer to one or more resolution-specific "variants", see
