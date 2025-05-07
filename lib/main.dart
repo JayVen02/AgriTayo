@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'authentication/login.dart';
-import 'screens/home.dart'; // Import your HomeScreen
+import 'screens/home.dart';
+import 'screens/game_screen.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,7 +30,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),
-        // '/game': (context) => GameDashboard(),
+        '/game': (context) => const GameScreen(),
         // '/credits': (context) => CreditsScreen(),
         // '/chatbot': (context) => ChatbotUI(),
       },
