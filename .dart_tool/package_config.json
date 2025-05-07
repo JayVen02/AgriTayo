@@ -33,19 +33,19 @@
     },
     {
       "name": "cloud_firestore",
-      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore-5.6.6",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore-5.6.7",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
     {
       "name": "cloud_firestore_platform_interface",
-      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_platform_interface-6.6.6",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_platform_interface-6.6.7",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
     {
       "name": "cloud_firestore_web",
-      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_web-4.4.6",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_web-4.4.7",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     },
@@ -68,8 +68,26 @@
       "languageVersion": "3.3"
     },
     {
+      "name": "firebase_app_check",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_app_check-0.3.2+5",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
+      "name": "firebase_app_check_platform_interface",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_app_check_platform_interface-0.1.1+5",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
+      "name": "firebase_app_check_web",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_app_check_web-0.2.0+9",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
+    },
+    {
       "name": "firebase_auth",
-      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth-5.5.2",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth-5.5.3",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
@@ -344,7 +362,7 @@
       "languageVersion": "3.7"
     }
   ],
-  "generated": "2025-05-07T06:51:27.070365Z",
+  "generated": "2025-05-07T20:42:06.954318Z",
   "generator": "pub",
   "generatorVersion": "3.7.2",
   "flutterRoot": "file:///C:/Users/joven/Downloads/src/flutter",
