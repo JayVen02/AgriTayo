@@ -1202,7 +1202,6 @@ String _getCropStatusText(double health) {
     return "Bad";
 }
 
-
 // Builds one small info chip with icon and text
 // Used for day, money, health info
   Widget _uiInfoChip(String text, {IconData? icon, Color? statusColor}) {
