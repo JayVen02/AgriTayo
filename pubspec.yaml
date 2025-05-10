@@ -58,6 +58,9 @@ flutter:
       - assets\images\AgriTayo - Logo.png
       - assets\images\Union.png
       - assets\images\Title Screen.png
+      - assets\images\AgriMarket.png
+      - assets\images\message.png
+      - assets\images\carrot.jpg
       
 
   # An image asset can refer to one or more resolution-specific "variants", see

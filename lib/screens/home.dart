@@ -28,15 +28,13 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 40),
               Column(
                 children: [
-                  const Text(
-                    'AgriMarket',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Futehodo-MaruGothic_1.00',
-                      color: Color(0xFF404040),
-                    ),
-                  ),
+MenuButton(
+  text: 'AgriMarket', // Rename the button if needed
+  onPressed: () {
+    Navigator.pushNamed(context, '/marketplace_screen'); // 
+  },
+),
+
                   const SizedBox(height: 30), // <-- Space between title and buttons
                   // Buttons stacked tightly
                   MenuButton(

@@ -1,290 +1,39 @@
-//test for github testing12
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'menuScreen/carrot.dart';
-import 'menuScreen/graph.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'authentication/login.dart';
+import 'screens/home.dart'; // Import your HomeScreen
+import 'screens/marketplace_screen.dart';
 
-void main() {
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    theme: ThemeData(
-      fontFamily: 'MyFont',
-    ),
-    home: MarketPricePage(),
-  ));
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(const MyApp());
 }
 
-class MarketPricePage extends StatelessWidget {
-  const MarketPricePage({super.key});
-
-  void _onItemClick(BuildContext context, String itemName) {
-  if (itemName == "Carrots") {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => Carrot()),
-    );
-  } else {
-    print("Clicked on $itemName");
-  }
-  }
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          // 🔹 Background Image
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/AgriMarket.png"),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-
-          SafeArea(
-            child: Column(
-              children: [
-                // 🔹 Top bar
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            side: BorderSide(color: Colors.green),
-                          ),
-                        ),
-                        child: Text("Back", style: TextStyle(color: Colors.green, fontFamily: "Futehodo-MaruGothic_1.00", fontWeight: FontWeight.bold)),
-                      ),
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            backgroundImage: AssetImage('assets/AgriMarket.png'),
-                          ),
-                          SizedBox(width: 6),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("Name", style: TextStyle(fontFamily: "Futehodo-MaruGothic_1.00",fontWeight: FontWeight.bold)),
-                              Text("Farmer", style: TextStyle(fontFamily: "Futehodo-MaruGothic_1.00",fontSize: 12)),
-                            ],
-                          )
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-                // Graph Section
-
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 16),
-                  padding: EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.yellow[100],
-                    borderRadius: BorderRadius.circular(12),
-                    ),
-                    height: 120,
-                    child: Column(
-                      children: [
-                        Expanded(
-                          
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.orange, // Background color for the bar chart
-                              borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: BarChart(
-                                BarChartData(
-                                  gridData: FlGridData(show: false),
-                                  titlesData: FlTitlesData(show: false),
-                                  borderData: FlBorderData(show: false),
-                                  barGroups: [
-                                    BarChartGroupData(
-                                      x: 0,
-                                      barRods: [
-                                        BarChartRodData(
-                                          toY: 1,
-                                          color: Colors.green,
-                                          width: 30,
-                                          borderRadius: BorderRadius.circular(4),
-                                        ),
-                                      ],
-                                    ),
-                                    BarChartGroupData(
-                                      x: 1,
-                                      barRods: [
-                                        BarChartRodData(
-                                          toY: 1.5,
-                                          color: Colors.green,
-                                          width: 30,
-                                          borderRadius: BorderRadius.circular(4),
-                                        ),
-                                      ],
-                                    ),
-                                    BarChartGroupData(
-                                      x: 2,
-                                      barRods: [
-                                        BarChartRodData(
-                                          toY: 1.4,
-                                          color: Colors.green,
-                                          width: 30,
-                                          borderRadius: BorderRadius.circular(4),
-                                        ),
-                                      ],
-                                    ),
-                                    BarChartGroupData(
-                                      x: 3,
-                                      barRods: [
-                                        BarChartRodData(
-                                          toY: 3.4,
-                                          color: Colors.green,
-                                          width: 30,
-                                          borderRadius: BorderRadius.circular(4),
-                                        ),
-                                      ],
-                                    ),
-                                    BarChartGroupData(
-                                      x: 4,
-                                      barRods: [
-                                        BarChartRodData(
-                                          toY: 2,
-                                          color: Colors.green,
-                                          width: 30,
-                                          borderRadius: BorderRadius.circular(4),
-                                        ),
-                                      ],
-                                  ),
-                                  BarChartGroupData(
-                                    x: 5,
-                                    barRods: [
-                                      BarChartRodData(
-                                        toY: 2.2,
-                                        color: Colors.green,
-                                        width: 30,
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                    ],
-                                  ),
-                                  BarChartGroupData(
-                                    x: 6,
-                                    barRods: [
-                                      BarChartRodData(
-                                        toY: 1.8,
-                                          color: Colors.green,
-                                          width: 30,
-                                          borderRadius: BorderRadius.circular(4),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      SizedBox(height: 4),
-                    ],
-                  ),
-                ),
-                GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Graph()),
-                  );
-                },
-                child: Text(
-                  "Demand for Potatoes",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-                SizedBox(height: 12),
-
-                // 🔹 Price List
-                Expanded(
-                  child: Container(
-                    margin: EdgeInsets.all(16),
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.95),
-                      border: Border.all(color: Colors.orange, width: 25.0),
-                      borderRadius: BorderRadius.circular(50),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Search Bar
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 12),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: TextField(
-                            decoration: InputDecoration(
-                              hintText: "Search",
-                              border: InputBorder.none,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 12),
-
-                        // Header
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Item", style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text("Prices\n(As of Date here)", textAlign: TextAlign.right),
-                          ],
-                        ),
-                        Divider(),
-
-                        // List of Items
-                        Expanded(
-                          child: ListView(
-                            children: [
-                              _buildClickableItem("Carrots", "100 per kg", (itemName) => _onItemClick(context, itemName)),
-                              Divider(),
-                              _buildClickableItem("Tomatoes", "80 per kg", (itemName) => _onItemClick(context, "Tomatoes")),
-                            ],
-                          ),
-
-                        )
-                      ],
-                    ),
-                  ),
-                  
-                )
-              ],
-            ),
-          ),
-        ],
+    return MaterialApp(
+      title: 'AgriTayo',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 6, 236, 21)),
+        useMaterial3: true,
       ),
+      initialRoute: '/login',
+      routes: {
+        '/login': (context) => const LoginScreen(),
+        '/home': (context) => const HomeScreen(),
+        '/marketplace_screen': (context) => const MarketplaceScreen(),
+        // '/game': (context) => GameDashboard(),
+        // '/credits': (context) => CreditsScreen(),
+        // '/chatbot': (context) => ChatbotUI(),
+      },
     );
   }
-
-  Widget _buildClickableItem(String name, String price, Function(String) onTap) {
-    return InkWell(
-      onTap: () => onTap(name),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 4),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(name, style: TextStyle(fontWeight: FontWeight.w500)),
-            Text(price, style: TextStyle(fontWeight: FontWeight.w400)),
-          ],
-        ),
-      ),
-    );
-  }
-
 }
-
-
