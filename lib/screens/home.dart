@@ -29,7 +29,7 @@ class HomeScreen extends StatelessWidget {
               Column(
                 children: [
 MenuButton(
-  text: 'AgriMarket', // Rename the button if needed
+  text: 'AgriMarket', //Namr of AgriMarket button
   onPressed: () {
     Navigator.pushNamed(context, '/marketplace_screen'); // 
   },
