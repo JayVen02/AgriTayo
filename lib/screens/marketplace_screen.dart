@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'message_screen.dart'; // Imports ChatScreen
+import 'message_screen.dart'; // Import of ChatScreen
 import 'profile_screen.dart';
 
 class MarketplaceScreen extends StatelessWidget {
