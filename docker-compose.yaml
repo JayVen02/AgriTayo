@@ -1,7 +1,0 @@
-version: "3.9"
-
-services:
-  app:
-    build: .
-    container_name: flutter_app
-    command: ["sh", "-c", "echo 'APK built. Copy it from /app/app-release.apk'"]

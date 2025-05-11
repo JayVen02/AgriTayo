@@ -40,6 +40,8 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(height: 30),
                   PressableText(text: 'AgriMarket'),
                   const SizedBox(height: 30),
+                  // --- FIX STARTS HERE ---
+                  // Removed the incorrect nested MenuButton and extra parenthesis
                   PressableMenuButton(
                     text: 'Play Game',
                     onPressed: () {
@@ -47,6 +49,7 @@ class HomeScreen extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 2),
+                  // --- FIX ENDS HERE ---
                   PressableMenuButton(
                     text: 'Credits',
                     onPressed: () {
