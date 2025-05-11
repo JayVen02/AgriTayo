@@ -410,7 +410,11 @@
       "languageVersion": "3.7"
     }
   ],
+<<<<<<< HEAD
   "generated": "2025-05-11T18:52:45.900483Z",
+=======
+  "generated": "2025-05-11T18:40:09.663299Z",
+>>>>>>> 17d2a1fce6207994c1edae0ed711b8f11d63b1fd
   "generator": "pub",
   "generatorVersion": "3.7.2",
   "flutterRoot": "file:///C:/Users/joven/Downloads/src/flutter",

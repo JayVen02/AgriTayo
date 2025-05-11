@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_services.dart';
+import 'register.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -122,8 +123,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       child: TextButton(
                         onPressed: () {
-                          print("Sign up clicked");
-                          // TODO: Navigate to signup screen
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const RegisterPage()),
+                          );
                         },
                         child: Text(
                           "Don't have an account? Sign up",
