@@ -5,7 +5,6 @@ import 'firebase_options.dart';
 import 'authentication/login.dart';
 import 'screens/home.dart';
 import 'screens/game_screen.dart';
-// import 'package:firebase_app_check/firebase_app_check.dart'
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
