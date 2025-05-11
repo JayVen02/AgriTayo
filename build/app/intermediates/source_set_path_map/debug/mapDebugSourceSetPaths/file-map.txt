@@ -35,7 +35,8 @@ com.company.agritayo.app-packageDebugResources-33 C:\Users\joven\Desktop\Persona
 com.company.agritayo.app-packageDebugResources-34 C:\Users\joven\Desktop\Personal Projects\Operation Debug\Project\agritayo\build\app\intermediates\incremental\debug\packageDebugResources\stripped.dir
 com.company.agritayo.app-debug-35 C:\Users\joven\Desktop\Personal Projects\Operation Debug\Project\agritayo\build\app\intermediates\merged_res\debug\mergeDebugResources
 com.company.agritayo.app-debug-36 C:\Users\joven\Desktop\Personal Projects\Operation Debug\Project\agritayo\build\cloud_firestore\intermediates\packaged_res\debug\packageDebugResources
-com.company.agritayo.app-debug-37 C:\Users\joven\Desktop\Personal Projects\Operation Debug\Project\agritayo\build\firebase_auth\intermediates\packaged_res\debug\packageDebugResources
-com.company.agritayo.app-debug-38 C:\Users\joven\Desktop\Personal Projects\Operation Debug\Project\agritayo\build\firebase_core\intermediates\packaged_res\debug\packageDebugResources
-com.company.agritayo.app-debug-39 C:\Users\joven\Desktop\Personal Projects\Operation Debug\Project\agritayo\build\firebase_storage\intermediates\packaged_res\debug\packageDebugResources
-com.company.agritayo.app-debug-40 C:\Users\joven\Desktop\Personal Projects\Operation Debug\Project\agritayo\build\google_sign_in_android\intermediates\packaged_res\debug\packageDebugResources
+com.company.agritayo.app-debug-37 C:\Users\joven\Desktop\Personal Projects\Operation Debug\Project\agritayo\build\firebase_app_check\intermediates\packaged_res\debug\packageDebugResources
+com.company.agritayo.app-debug-38 C:\Users\joven\Desktop\Personal Projects\Operation Debug\Project\agritayo\build\firebase_auth\intermediates\packaged_res\debug\packageDebugResources
+com.company.agritayo.app-debug-39 C:\Users\joven\Desktop\Personal Projects\Operation Debug\Project\agritayo\build\firebase_core\intermediates\packaged_res\debug\packageDebugResources
+com.company.agritayo.app-debug-40 C:\Users\joven\Desktop\Personal Projects\Operation Debug\Project\agritayo\build\firebase_storage\intermediates\packaged_res\debug\packageDebugResources
+com.company.agritayo.app-debug-41 C:\Users\joven\Desktop\Personal Projects\Operation Debug\Project\agritayo\build\google_sign_in_android\intermediates\packaged_res\debug\packageDebugResources

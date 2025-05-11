@@ -1,11 +1,27 @@
 [
     {
+        "merged": "C:\\Users\\joven\\.gradle\\daemon\\8.10.2\\com.company.agritayo.app-debug-35:\\mipmap-xxhdpi_ic_launcher.png.flat",
+        "source": "C:\\Users\\joven\\.gradle\\daemon\\8.10.2\\com.company.agritayo.app-main-29:\\mipmap-xxhdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "C:\\Users\\joven\\.gradle\\daemon\\8.10.2\\com.company.agritayo.app-debug-35:\\drawable-v21_launch_background.xml.flat",
+        "source": "C:\\Users\\joven\\.gradle\\daemon\\8.10.2\\com.company.agritayo.app-main-29:\\drawable-v21\\launch_background.xml"
+    },
+    {
+        "merged": "C:\\Users\\joven\\.gradle\\daemon\\8.10.2\\com.company.agritayo.app-debug-35:\\mipmap-xhdpi_ic_launcher.png.flat",
+        "source": "C:\\Users\\joven\\.gradle\\daemon\\8.10.2\\com.company.agritayo.app-main-29:\\mipmap-xhdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "C:\\Users\\joven\\.gradle\\daemon\\8.10.2\\com.company.agritayo.app-debug-35:\\mipmap-hdpi_ic_launcher.png.flat",
+        "source": "C:\\Users\\joven\\.gradle\\daemon\\8.10.2\\com.company.agritayo.app-main-29:\\mipmap-hdpi\\ic_launcher.png"
+    },
+    {
         "merged": "com.company.agritayo.app-debug-35:/mipmap-xxhdpi_ic_launcher.png.flat",
         "source": "com.company.agritayo.app-main-29:/mipmap-xxhdpi/ic_launcher.png"
     },
     {
-        "merged": "com.company.agritayo.app-debug-35:/drawable-v21_launch_background.xml.flat",
-        "source": "com.company.agritayo.app-main-29:/drawable-v21/launch_background.xml"
+        "merged": "C:\\Users\\joven\\.gradle\\daemon\\8.10.2\\com.company.agritayo.app-debug-35:\\mipmap-xxxhdpi_ic_launcher.png.flat",
+        "source": "C:\\Users\\joven\\.gradle\\daemon\\8.10.2\\com.company.agritayo.app-main-29:\\mipmap-xxxhdpi\\ic_launcher.png"
     },
     {
         "merged": "com.company.agritayo.app-debug-35:/mipmap-xhdpi_ic_launcher.png.flat",
@@ -22,5 +38,9 @@
     {
         "merged": "com.company.agritayo.app-debug-35:/mipmap-mdpi_ic_launcher.png.flat",
         "source": "com.company.agritayo.app-main-29:/mipmap-mdpi/ic_launcher.png"
+    },
+    {
+        "merged": "C:\\Users\\joven\\.gradle\\daemon\\8.10.2\\com.company.agritayo.app-debug-35:\\mipmap-mdpi_ic_launcher.png.flat",
+        "source": "C:\\Users\\joven\\.gradle\\daemon\\8.10.2\\com.company.agritayo.app-main-29:\\mipmap-mdpi\\ic_launcher.png"
     }
 ]

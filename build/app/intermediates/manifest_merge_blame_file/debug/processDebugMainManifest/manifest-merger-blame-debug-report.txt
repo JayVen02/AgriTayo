@@ -76,7 +76,7 @@
 48        android:debuggable="true"
 49        android:extractNativeLibs="false"
 50        android:icon="@mipmap/ic_launcher"
-51        android:label="agritayo" >
+51        android:label="AgriTayo" >
 52        <meta-data
 53            android:name="com.google.android.gms.version"
 54            android:value="@integer/google_play_services_version" />
