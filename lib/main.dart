@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'authentication/login.dart';
-import 'screens/home.dart'; // Import your HomeScreen
+import 'screens/home.dart';
+import 'chatbot/chatbot_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'screens/credit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -21,7 +25,8 @@ class MyApp extends StatelessWidget {
       title: 'AgriTayo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 6, 236, 21)),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 6, 236, 21)),
         useMaterial3: true,
       ),
       initialRoute: '/login',
@@ -29,8 +34,8 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),
         // '/game': (context) => GameDashboard(),
-        // '/credits': (context) => CreditsScreen(),
-        // '/chatbot': (context) => ChatbotUI(),
+        '/credits': (context) => const CreditsScreen(),
+        '/chatbot': (context) => const ChatbotScreen(),
       },
     );
   }
