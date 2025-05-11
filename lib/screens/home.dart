@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
-// import 'dart:io'; // Uncomment if you're using exit(0)
-=======
 import 'dart:io';
->>>>>>> 80da4e54c180bf4b94ab96d1c51b0ec635c477fb
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -32,7 +28,6 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 40),
               Column(
                 children: [
-<<<<<<< HEAD
                   const Text(
                     'AgriMarket',
                     style: TextStyle(
@@ -42,67 +37,37 @@ class HomeScreen extends StatelessWidget {
                       color: Color(0xFF404040),
                     ),
                   ),
-                  const SizedBox(height: 30), // <-- Space between title and buttons
-                  // Buttons stacked tightly
-                  MenuButton(
-=======
-                  const PressableText(text: 'AgriMarket'),
+                  const SizedBox(height: 30),
+                  PressableText(text: 'AgriMarket'),
                   const SizedBox(height: 30),
                   PressableMenuButton(
->>>>>>> 80da4e54c180bf4b94ab96d1c51b0ec635c477fb
                     text: 'Play Game',
                     onPressed: () {
                       Navigator.pushNamed(context, '/game');
                     },
                   ),
-<<<<<<< HEAD
-                  MenuButton(
-=======
                   const SizedBox(height: 2),
                   PressableMenuButton(
->>>>>>> 80da4e54c180bf4b94ab96d1c51b0ec635c477fb
                     text: 'Credits',
                     onPressed: () {
                       Navigator.pushNamed(context, '/credits');
                     },
                   ),
-<<<<<<< HEAD
-                  MenuButton(
-                    text: 'Quit',
-                    onPressed: () {
-                      // exit(0); // Uncomment if needed
-=======
                   const SizedBox(height: 2),
                   PressableMenuButton(
                     text: 'Quit',
                     onPressed: () {
                       exit(0);
->>>>>>> 80da4e54c180bf4b94ab96d1c51b0ec635c477fb
                     },
                   ),
                 ],
               ),
             ],
           ),
-<<<<<<< HEAD
-          Positioned(
-            bottom: 20,
-            right: 20,
-            child: GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, '/chatbot');
-              },
-              child: Image.asset(
-                'assets/images/Union.png',
-                height: 80,
-              ),
-            ),
-=======
           const Positioned(
             bottom: 20,
             right: 20,
             child: ChatbotTap(),
->>>>>>> 80da4e54c180bf4b94ab96d1c51b0ec635c477fb
           ),
         ],
       ),
@@ -110,37 +75,17 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-<<<<<<< HEAD
-class MenuButton extends StatelessWidget {
-  final String text;
-  final VoidCallback onPressed;
-
-  const MenuButton({
-=======
 class PressableMenuButton extends StatefulWidget {
   final String text;
   final VoidCallback onPressed;
 
   const PressableMenuButton({
->>>>>>> 80da4e54c180bf4b94ab96d1c51b0ec635c477fb
     super.key,
     required this.text,
     required this.onPressed,
   });
 
   @override
-<<<<<<< HEAD
-  Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: onPressed,
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: Color(0xFF404040),
-          fontFamily: 'Futehodo-MaruGothic_1.00',
-=======
   _PressableMenuButtonState createState() => _PressableMenuButtonState();
 }
 
@@ -150,45 +95,29 @@ class _PressableMenuButtonState extends State<PressableMenuButton> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown: (_) {
-        setState(() {
-          _isPressed = true;
-        });
-      },
+      onTapDown: (_) => setState(() => _isPressed = true),
       onTapUp: (_) {
-        setState(() {
-          _isPressed = false;
-        });
+        setState(() => _isPressed = false);
         widget.onPressed();
       },
-      onTapCancel: () {
-        setState(() {
-          _isPressed = false;
-        });
-      },
+      onTapCancel: () => setState(() => _isPressed = false),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 100),
         transform: Matrix4.rotationZ(_isPressed ? 0.05 : 0),
         transformAlignment: Alignment.center,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 2),
-          child: Text(
-            widget.text,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: _isPressed ? Colors.white : const Color(0xFF404040),
-              fontFamily: 'Futehodo-MaruGothic_1.00',
-            ),
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Text(
+          widget.text,
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: _isPressed ? Colors.white : const Color(0xFF404040),
+            fontFamily: 'Futehodo-MaruGothic_1.00',
           ),
->>>>>>> 80da4e54c180bf4b94ab96d1c51b0ec635c477fb
         ),
       ),
     );
   }
-<<<<<<< HEAD
-}
-=======
 }
 
 class PressableText extends StatefulWidget {
@@ -206,21 +135,9 @@ class _PressableTextState extends State<PressableText> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown: (_) {
-        setState(() {
-          _isPressed = true;
-        });
-      },
-      onTapUp: (_) {
-        setState(() {
-          _isPressed = false;
-        });
-      },
-      onTapCancel: () {
-        setState(() {
-          _isPressed = false;
-        });
-      },
+      onTapDown: (_) => setState(() => _isPressed = true),
+      onTapUp: (_) => setState(() => _isPressed = false),
+      onTapCancel: () => setState(() => _isPressed = false),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 100),
         transform: Matrix4.rotationZ(_isPressed ? -0.10 : 0),
@@ -250,22 +167,16 @@ class _ChatbotTapState extends State<ChatbotTap> {
   bool _isPressed = false;
 
   void _onTapDown(TapDownDetails details) {
-    setState(() {
-      _isPressed = true;
-    });
+    setState(() => _isPressed = true);
   }
 
   void _onTapUp(TapUpDetails details) {
-    setState(() {
-      _isPressed = false;
-    });
+    setState(() => _isPressed = false);
     Navigator.pushNamed(context, '/chatbot');
   }
 
   void _onTapCancel() {
-    setState(() {
-      _isPressed = false;
-    });
+    setState(() => _isPressed = false);
   }
 
   @override
@@ -290,4 +201,3 @@ class _ChatbotTapState extends State<ChatbotTap> {
     );
   }
 }
->>>>>>> 80da4e54c180bf4b94ab96d1c51b0ec635c477fb
