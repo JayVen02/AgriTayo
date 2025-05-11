@@ -5,8 +5,8 @@ import 'home.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 
-// Holds information for each seed type
 class SeedData {
   final String name;
   final int harvestingDays;
@@ -31,6 +31,16 @@ class SeedData {
       'weaknesses': weaknesses,
     };
   }
+
+  factory SeedData.fromMap(Map<String, dynamic> map) {
+    return SeedData(
+      name: map['name'],
+      harvestingDays: map['harvestingDays'],
+      iconAsset: map['iconAsset'],
+      strengths: List<String>.from(map['strengths'] ?? []),
+      weaknesses: List<String>.from(map['weaknesses'] ?? []),
+    );
+  }
 }
 
 enum GameStage {
@@ -45,18 +55,37 @@ enum GameStage {
   harvesting,
   results,
   showTips,
-  loadingToHome
+  loadingToHome,
+  loadingGame
 }
 
-// Player's possible actions each day
 enum DailyAction { water, fertilize, weedPest, prepareSoil, doNothing }
 
-// AI's judgement categories
 enum AIJudgementCategory { smartAndEffective, ineffectiveOrTooLate, comedicUseless }
 
-// Main screen for the game
+String enumToString(dynamic e) {
+  return e.toString().split('.').last;
+}
+
+GameStage stringToGameStage(String s) {
+  return GameStage.values.firstWhere(
+    (e) => enumToString(e) == s,
+    orElse: () => GameStage.intro,
+  );
+}
+
+AIJudgementCategory? stringToAIJudgementCategory(String? s) {
+  if (s == null) return null;
+  return AIJudgementCategory.values.firstWhere(
+    (e) => enumToString(e) == s,
+    orElse: () => AIJudgementCategory.comedicUseless,
+  );
+}
+
+
 class GameScreen extends StatefulWidget {
-  const GameScreen({super.key});
+  final bool loadGame;
+  const GameScreen({super.key, this.loadGame = false});
 
   @override
   State<GameScreen> createState() => _GameScreenState();
@@ -75,7 +104,6 @@ class _GameScreenState extends State<GameScreen> {
   String _cropStatusMessage = "Ready to plant!";
   int _totalInvestment = 0;
 
-  // Player's inventory
   Map<String, int> _inventory = {
     'Fertilizer': 2,
     'Pest Spray': 2,
@@ -91,7 +119,6 @@ class _GameScreenState extends State<GameScreen> {
   bool _showWeatherImageOverlay = false;
   Timer? _weatherImageTimer;
 
-  // Harvest results
   String _cropQuality = "Unknown";
   int _harvestValue = 0;
   int _profitOrLoss = 0;
@@ -99,14 +126,12 @@ class _GameScreenState extends State<GameScreen> {
 
   final TextEditingController weatherResponseController = TextEditingController();
 
-  // Descriptions for different land types
   final Map<String, String> _terrainDescriptions = {
     'Mountain': 'Cold climate, rocky soil, high elevation.',
     'Hills': 'Mild climate, good drainage.',
     'Lowlands': 'Warm and humid, ideal for wet crops.'
   };
 
-  // Information for each seed
   final Map<String, SeedData> _seedInfo = {
     'Adlay Rice': SeedData(
         name: 'Adlay Rice',
@@ -155,17 +180,14 @@ class _GameScreenState extends State<GameScreen> {
   List<String> _availableSeedKeys = [];
   final int _numberOfSeedOptions = 4;
 
-  // Messages shown at the start
   final List<String> _introMessages = [
     "Welcome Aspiring Farmer!, Each option you pick will lead you down a different path.",
     "Sometimes, a choice might not have a big impact right away, but it could influence things later on.",
     "So, when you see a choice, take a moment to think about what you want to happen!"
   ];
 
-  // Normal weather types
   final List<String> _normalWeatherEvents = ['Sunny', 'Rainy', 'Cloudy'];
 
-  // Dangerous weather types
   final List<String> _disasterWeatherEvents = [
     'Thunderstorm',
     'Typhoon',
@@ -175,7 +197,6 @@ class _GameScreenState extends State<GameScreen> {
   ];
   List<String> _allWeatherEvents = [];
 
-  // Image assets for weather
   final Map<String, String> _weatherImageAssets = {
     'Sunny': 'assets/images/sunny.png',
     'Rainy': 'assets/images/rain.png',
@@ -197,7 +218,6 @@ class _GameScreenState extends State<GameScreen> {
     'Harvest Time': 'assets/images/HarvestTime 1.png',
   };
 
-  // Tips displayed at the end of a season
   final List<String> _gameTips = [
     "Tip: Matching seeds to terrain strengths can boost your harvest!",
     "Tip: Pay attention to weather forecasts; they can save your crops.",
@@ -207,12 +227,128 @@ class _GameScreenState extends State<GameScreen> {
     "Tip: 'Preparing Soil' uses a shovel and can give a small health boost.",
   ];
 
+  Future<File> _getGameStateFile() async {
+    final directory = await getApplicationDocumentsDirectory();
+    return File(p.join(directory.path, 'gamestate.json'));
+  }
+
+  Future<void> _saveGameState() async {
+    if (!mounted) return;
+
+    final file = await _getGameStateFile();
+
+    final Map<String, dynamic> state = {
+      'currentStage': enumToString(_currentStage),
+      'currentMessageIndex': _currentMessageIndex,
+      'selectedTerrain': _selectedTerrain,
+      'selectedSeedData': _selectedSeedData?.toMap(),
+      'money': _money,
+      'currentDay': _currentDay,
+      'cropHealth': _cropHealth,
+      'cropStatusMessage': _cropStatusMessage,
+      'totalInvestment': _totalInvestment,
+      'inventory': _inventory,
+      'currentWeatherHint': _currentWeatherHint,
+      'currentWeatherEvent': _currentWeatherEvent,
+      'playerWeatherResponse': _playerWeatherResponse,
+      'aiJudgement': _aiJudgement != null ? enumToString(_aiJudgement!) : null,
+      'aiJudgementFeedback': _aiJudgementFeedback,
+      'cropQuality': _cropQuality,
+      'harvestValue': _harvestValue,
+      'profitOrLoss': _profitOrLoss,
+      'gameOutcome': _gameOutcome,
+      'availableSeedKeys': _availableSeedKeys,
+    };
+
+    try {
+      final jsonString = jsonEncode(state);
+      await file.writeAsString(jsonString);
+      print('Game state saved successfully.');
+       _logGameState('Save', eventDetails: 'Game state saved.');
+    } catch (e) {
+      print('Error saving game state: $e');
+       _logGameState('Error', eventDetails: 'Error saving game state: $e');
+    }
+  }
+
+  Future<bool> _loadGameState() async {
+    final file = await _getGameStateFile();
+
+    if (!await file.exists()) {
+      print('No save file found.');
+       _logGameState('Load', eventDetails: 'No save file found.');
+      return false;
+    }
+
+    try {
+      final jsonString = await file.readAsString();
+      final Map<String, dynamic> state = jsonDecode(jsonString);
+
+      if (mounted) {
+        setState(() {
+          _currentStage = stringToGameStage(state['currentStage'] ?? 'intro');
+          _currentMessageIndex = state['currentMessageIndex'] ?? 0;
+
+          _selectedTerrain = state['selectedTerrain'];
+          final selectedSeedMap = state['selectedSeedData'];
+          _selectedSeedData = selectedSeedMap != null ? SeedData.fromMap(selectedSeedMap) : null;
+
+          _money = state['money'] ?? 200;
+          _currentDay = state['currentDay'] ?? 1;
+          _cropHealth = (state['cropHealth'] ?? 100.0).toDouble();
+          _cropStatusMessage = state['cropStatusMessage'] ?? "Ready to plant!";
+          _totalInvestment = state['totalInvestment'] ?? 0;
+          _inventory = Map<String, int>.from(state['inventory'] ?? {
+             'Fertilizer': 2,
+             'Pest Spray': 2,
+             'Shovel': 1,
+          });
+
+          _currentWeatherHint = state['currentWeatherHint'];
+          _currentWeatherEvent = state['currentWeatherEvent'];
+          _playerWeatherResponse = state['playerWeatherResponse'];
+          _aiJudgement = stringToAIJudgementCategory(state['aiJudgement']);
+          _aiJudgementFeedback = state['aiJudgementFeedback'] ?? "";
+
+          _cropQuality = state['cropQuality'] ?? "Unknown";
+          _harvestValue = state['harvestValue'] ?? 0;
+          _profitOrLoss = state['profitOrLoss'] ?? 0;
+          _gameOutcome = state['gameOutcome'] ?? "";
+          _availableSeedKeys = List<String>.from(state['availableSeedKeys'] ?? []);
+        });
+      }
+      print('Game state loaded successfully.');
+      _logGameState('Load', eventDetails: 'Game state loaded.');
+      return true;
+
+    } catch (e) {
+      print('Error loading game state: $e');
+      _logGameState('Error', eventDetails: 'Error loading game state: $e');
+      // _clearSaveFile();
+      return false;
+    }
+  }
+
+  Future<void> _clearSaveFile() async {
+    final file = await _getGameStateFile();
+    try {
+      if (await file.exists()) {
+        await file.delete();
+        print('Game state save file cleared.');
+        _logGameState('Save', eventDetails: 'Game state save file cleared.');
+      }
+    } catch (e) {
+      print('Error clearing game state save file: $e');
+      _logGameState('Error', eventDetails: 'Error clearing game state save file: $e');
+    }
+  }
+
+
   Future<File> _getLogFile() async {
     final directory = await getApplicationDocumentsDirectory();
     return File('${directory.path}/gamestate_log.jsonl');
   }
 
-  // Appends a state snapshot to the log file
   Future<void> _logGameState(String eventType, {String? eventDetails}) async {
     try {
       final file = await _getLogFile();
@@ -220,7 +356,7 @@ class _GameScreenState extends State<GameScreen> {
 
       final Map<String, dynamic> stateSnapshot = {
         'timestamp': timestamp,
-        'currentStage': _currentStage.toString().split('.').last,
+        'currentStage': enumToString(_currentStage),
         'eventType': eventType,
         'eventDetails': eventDetails,
         'day': _currentDay,
@@ -234,9 +370,9 @@ class _GameScreenState extends State<GameScreen> {
         'weatherHint': _currentWeatherHint,
         'weatherEvent': _currentWeatherEvent,
         'playerWeatherResponse': _playerWeatherResponse,
-        'aiJudgement': _aiJudgement?.toString().split('.').last,
+        'aiJudgement': _aiJudgement != null ? enumToString(_aiJudgement!) : null,
         'aiJudgementFeedback': _aiJudgementFeedback,
-        if (_currentStage == GameStage.results) ...{
+        if (_currentStage == GameStage.results || _currentStage == GameStage.showTips) ...{
           'cropQuality': _cropQuality,
           'harvestValue': _harvestValue,
           'profitOrLoss': _profitOrLoss,
@@ -251,7 +387,6 @@ class _GameScreenState extends State<GameScreen> {
     }
   }
 
-  // Clears the game state log file
   Future<void> _clearLogFile() async {
     try {
       final file = await _getLogFile();
@@ -263,18 +398,35 @@ class _GameScreenState extends State<GameScreen> {
     }
   }
 
+
   @override
   void initState() {
     super.initState();
     _allWeatherEvents = [..._normalWeatherEvents, ..._disasterWeatherEvents];
     _clearLogFile();
-    _startIntroSequence();
-    _logGameState('AppStart', eventDetails: 'Intro sequence started');
+
+    if (widget.loadGame) {
+      _currentStage = GameStage.loadingGame;
+      _logGameState('StageChange', eventDetails: 'Loading Game');
+      _loadGameState().then((loaded) {
+        if (!mounted) return;
+        if (loaded) {
+          print('Game loaded, resuming at stage: $_currentStage');
+           _logGameState('Load', eventDetails: 'Resuming at stage: $_currentStage');
+        } else {
+          print('Load failed or no save found, starting new game.');
+          _startIntroSequence();
+        }
+      });
+    } else {
+      _clearSaveFile();
+      _startIntroSequence();
+    }
   }
 
-  // Displays intro messages sequentially
   void _startIntroSequence() async {
-    _currentStage = GameStage.intro;
+    if (!mounted) return;
+    setState(() => _currentStage = GameStage.intro);
     _logGameState('StageChange', eventDetails: 'Intro');
     for (int i = 0; i < _introMessages.length; i++) {
       if (!mounted) return;
@@ -284,17 +436,17 @@ class _GameScreenState extends State<GameScreen> {
     if (!mounted) return;
     setState(() => _currentStage = GameStage.terrainSelection);
      _logGameState('StageChange', eventDetails: 'Terrain Selection');
+     await _saveGameState();
   }
 
-  // Skips the intro messages
-  void _skipIntro() {
+  void _skipIntro() async {
     setState(() => _currentStage = GameStage.terrainSelection);
     _logGameState('Action', eventDetails: 'Skipped Intro');
     _logGameState('StageChange', eventDetails: 'Terrain Selection');
+    await _saveGameState();
   }
 
-  // Sets the selected terrain and moves to seed selection
-  void _selectTerrain(String terrain) {
+  void _selectTerrain(String terrain) async {
     _generateRandomSeedOptions();
 
     setState(() {
@@ -303,9 +455,9 @@ class _GameScreenState extends State<GameScreen> {
     });
     _logGameState('Action', eventDetails: 'Selected Terrain: $terrain');
     _logGameState('StageChange', eventDetails: 'Seed Selection');
+    await _saveGameState();
   }
 
-  // Generates random seed options for the season
   void _generateRandomSeedOptions() {
       final random = Random();
       final allSeedKeys = _seedInfo.keys.toList();
@@ -314,8 +466,7 @@ class _GameScreenState extends State<GameScreen> {
        _logGameState('SeedOptionsGenerated', eventDetails: 'Available seeds: ${_availableSeedKeys.join(', ')}');
   }
 
-  // Sets the selected seed, resets game state, and starts the daily cycle
-  void _selectSeed(String seedKey) {
+  void _selectSeed(String seedKey) async {
     setState(() {
       _selectedSeedData = _seedInfo[seedKey];
       _totalInvestment = 0;
@@ -326,15 +477,15 @@ class _GameScreenState extends State<GameScreen> {
         'Pest Spray': 2,
         'Shovel': 1,
       };
-      _cropStatusMessage = "Planted ${_selectedSeedData!.name}";
+      _cropStatusMessage = "Planted ${_selectedSeedData!.name}!";
       _currentStage = GameStage.dailyCycle;
     });
     _logGameState('Action', eventDetails: 'Selected Seed: $seedKey');
     _logGameState('StageChange', eventDetails: 'Daily Cycle');
+    await _saveGameState();
   }
 
-  // Handles the player's chosen daily action
-  void _handleDailyAction(DailyAction action) {
+  void _handleDailyAction(DailyAction action) async {
     if (_selectedSeedData == null) return;
     String actionMessage = "";
     int cost = 0;
@@ -342,7 +493,7 @@ class _GameScreenState extends State<GameScreen> {
     String? itemConsumed;
     bool canPerformAction = true;
 
-    _logGameState('PlayerAction', eventDetails: 'Attempted Daily Action: ${action.toString().split('.').last}');
+    _logGameState('PlayerAction', eventDetails: 'Attempted Daily Action: ${enumToString(action)}');
 
     switch (action) {
       case DailyAction.water:
@@ -360,8 +511,11 @@ class _GameScreenState extends State<GameScreen> {
           healthChange = 15;
         } else {
           canPerformAction = false;
-          if (_money < cost) actionMessage = "Not enough money to fertilize! Needs ₱$cost.";
-          else actionMessage = "You need Fertilizer to do that! You have ${_inventory[itemConsumed] ?? 0}.";
+          if (_money < cost) {
+            actionMessage = "Not enough money to fertilize! Needs ₱$cost.";
+          } else {
+            actionMessage = "You need Fertilizer to do that! You have ${_inventory[itemConsumed] ?? 0}.";
+          }
         }
         break;
       case DailyAction.weedPest:
@@ -375,8 +529,11 @@ class _GameScreenState extends State<GameScreen> {
           healthChange = 10;
         } else {
           canPerformAction = false;
-          if (_money < cost) actionMessage = "Not enough money for weed/pest control! Needs ₱$cost.";
-          else actionMessage = "You need Pest Spray to do that! You have ${_inventory[itemConsumed] ?? 0}.";
+          if (_money < cost) {
+            actionMessage = "Not enough money for weed/pest control! Needs ₱$cost.";
+          } else {
+            actionMessage = "You need Pest Spray to do that! You have ${_inventory[itemConsumed] ?? 0}.";
+          }
         }
         break;
       case DailyAction.prepareSoil:
@@ -385,12 +542,15 @@ class _GameScreenState extends State<GameScreen> {
         if ((_inventory[itemConsumed] ?? 0) > 0 && _money >= cost) {
           _money -= cost;
           _totalInvestment += cost;
-          actionMessage = "You prepared the soil with the Shovel. Cost: ₱$cost";
+          actionMessage = "You prepared the soil. Cost: ₱$cost";
           healthChange = 8;
         } else {
           canPerformAction = false;
-          if (_money < cost) actionMessage = "Not enough money to prepare soil! Needs ₱$cost.";
-          else actionMessage = "You need a Shovel to prepare the soil! You have ${_inventory[itemConsumed] ?? 0}.";
+          if (_money < cost) {
+            actionMessage = "Not enough money to prepare soil! Needs ₱$cost.";
+          } else {
+            actionMessage = "You need a Shovel to prepare the soil! You have ${_inventory[itemConsumed] ?? 0}.";
+          }
         }
         break;
       case DailyAction.doNothing:
@@ -404,7 +564,7 @@ class _GameScreenState extends State<GameScreen> {
 
       _logGameState(
         'DailyActionOutcome',
-        eventDetails: '${action.toString().split('.').last} - Success: $canPerformAction, HealthChange: $healthChange, NewHealth: $_cropHealth',
+        eventDetails: '${enumToString(action)} - Success: $canPerformAction, HealthChange: $healthChange, NewHealth: $_cropHealth',
       );
 
       if (_cropHealth <= 0) {
@@ -417,6 +577,7 @@ class _GameScreenState extends State<GameScreen> {
         _currentStage = GameStage.weatherForecast;
       });
       _logGameState('StageChange', eventDetails: 'Weather Forecast');
+      await _saveGameState();
 
     } else {
       setState(() {
@@ -424,12 +585,11 @@ class _GameScreenState extends State<GameScreen> {
       });
        _logGameState(
         'DailyActionOutcome',
-        eventDetails: '${action.toString().split('.').last} - Failed (Insufficient Funds/Items)',
+        eventDetails: '${enumToString(action)} - Failed (Insufficient Funds/Items)',
       );
     }
   }
 
-  // Generates a weather forecast and the actual weather event
   void _generateWeatherForecast() {
     if (_selectedSeedData == null) return;
     final random = Random();
@@ -469,10 +629,24 @@ class _GameScreenState extends State<GameScreen> {
 
     bool isActualWeatherDisaster = random.nextDouble() < 0.2;
     if (isActualWeatherDisaster) {
-      _currentWeatherEvent = _disasterWeatherEvents[random.nextInt(_disasterWeatherEvents.length)];
+       if (_selectedSeedData!.weaknesses.isNotEmpty && random.nextDouble() < 0.4) {
+          _currentWeatherEvent = _selectedSeedData!.weaknesses[random.nextInt(_selectedSeedData!.weaknesses.length)];
+       } else {
+          _currentWeatherEvent = _disasterWeatherEvents[random.nextInt(_disasterWeatherEvents.length)];
+       }
     } else {
-      _currentWeatherEvent = _normalWeatherEvents[random.nextInt(_normalWeatherEvents.length)];
+       if (_selectedSeedData!.strengths.isNotEmpty && random.nextDouble() < 0.4) {
+           List<String> normalStrengths = _selectedSeedData!.strengths.where((s) => _normalWeatherEvents.contains(s)).toList();
+           if(normalStrengths.isNotEmpty) {
+              _currentWeatherEvent = normalStrengths[random.nextInt(normalStrengths.length)];
+           } else {
+              _currentWeatherEvent = _normalWeatherEvents[random.nextInt(_normalWeatherEvents.length)];
+           }
+       } else {
+          _currentWeatherEvent = _normalWeatherEvents[random.nextInt(_normalWeatherEvents.length)];
+       }
     }
+
 
     setState(() {
       _currentStage = GameStage.weatherEvent;
@@ -484,8 +658,7 @@ class _GameScreenState extends State<GameScreen> {
      _logGameState('StageChange', eventDetails: 'Weather Event');
   }
 
-  // Processes the player's typed action during a weather event and calculates effects
-  void _processPlayerWeatherAction() {
+  void _processPlayerWeatherAction() async {
     final playerInput = weatherResponseController.text.toLowerCase().trim();
     _playerWeatherResponse = playerInput.isEmpty ? "[No Action]" : playerInput;
 
@@ -503,11 +676,11 @@ class _GameScreenState extends State<GameScreen> {
 
     double initialHealth = _cropHealth;
 
-    if (playerInput.isEmpty) {
-      recognizedAction = true;
-      healthEffect = isDisaster ? -30 : -5;
-      potentialJudgement = isDisaster ? AIJudgementCategory.ineffectiveOrTooLate : AIJudgementCategory.ineffectiveOrTooLate;
-      _aiJudgementFeedback = "Doing nothing during a disaster ($_currentWeatherEvent) was very risky!";
+    if (playerInput.isEmpty || playerInput.contains("do nothing") || playerInput.contains("nothing")) {
+        recognizedAction = true;
+        healthEffect -= (isDisaster ? 25 : 10);
+        potentialJudgement = AIJudgementCategory.ineffectiveOrTooLate;
+        _aiJudgementFeedback = playerInput.isEmpty ? "You didn't react to $_currentWeatherEvent." : "'${weatherResponseController.text}'... Ignoring $_currentWeatherEvent proved costly!";
     } else {
       if ((playerInput.contains("spray") || playerInput.contains("pest") || playerInput.contains("bug")) && (_currentWeatherEvent == 'Locust Swarm')) {
         recognizedAction = true;
@@ -524,55 +697,57 @@ class _GameScreenState extends State<GameScreen> {
           _aiJudgementFeedback = "You tried to use $item against $_currentWeatherEvent but didn't have any left! You have ${_inventory[item] ?? 0}.";
         }
       } else if ((playerInput.contains("fertilize") || playerInput.contains("nutrients")) && !isDisaster) {
-        recognizedAction = true;
-        String item = 'Fertilizer';
-        if ((_inventory[item] ?? 0) > 0) {
-          _inventory[item] = (_inventory[item] ?? 0) - 1;
-          healthEffect += 15;
-          potentialJudgement = AIJudgementCategory.smartAndEffective;
-          _aiJudgementFeedback = "Applying $item provided valuable nutrients for growth.";
-          effectiveActionTaken = true;
-        } else {
-          healthEffect -= 5;
-          potentialJudgement = AIJudgementCategory.ineffectiveOrTooLate;
-          _aiJudgementFeedback = "You wanted to fertilize but ran out! You have ${_inventory[item] ?? 0}.";
-        }
-      } else if ((playerInput.contains("water") || playerInput.contains("irrigate")) && (_currentWeatherEvent == "Heatwave (El Nino)" || _currentWeatherEvent == "Sunny")) {
+         recognizedAction = true;
+         String item = 'Fertilizer';
+         if ((_inventory[item] ?? 0) > 0) {
+            _inventory[item] = (_inventory[item] ?? 0) - 1;
+            healthEffect += 15;
+            potentialJudgement = AIJudgementCategory.smartAndEffective;
+            _aiJudgementFeedback = "Applying $item provided valuable nutrients for growth.";
+            effectiveActionTaken = true;
+         } else {
+            healthEffect -= 5;
+            potentialJudgement = AIJudgementCategory.ineffectiveOrTooLate;
+            _aiJudgementFeedback = "You wanted to fertilize but ran out! You have ${_inventory[item] ?? 0}.";
+         }
+      } else if ((playerInput.contains("water") || playerInput.contains("irrigate")) && (_currentWeatherEvent == "Heatwave (El Nino)" || _currentWeatherEvent == "Sunny" || _currentWeatherEvent == "Cloudy")) {
         recognizedAction = true;
         healthEffect += (isDisaster ? 20 : 10);
         potentialJudgement = AIJudgementCategory.smartAndEffective;
         _aiJudgementFeedback = "Watering helped counter the dry effects of $_currentWeatherEvent.";
         effectiveActionTaken = true;
-      } else if ((playerInput.contains("prepare") || playerInput.contains("reinforce") || playerInput.contains("secure") || playerInput.contains("shovel")) && isDisaster) {
+      } else if ((playerInput.contains("prepare") || playerInput.contains("reinforce") || playerInput.contains("secure")) && isDisaster) {
         recognizedAction = true;
         String item = 'Shovel';
-        if ((_inventory[item] ?? 0) > 0) {
-          healthEffect += 15;
-          potentialJudgement = AIJudgementCategory.smartAndEffective;
-          _aiJudgementFeedback = "You took steps to prepare the farm for $_currentWeatherEvent.";
-          effectiveActionTaken = true;
-        } else {
-          healthEffect -= 10;
-          potentialJudgement = AIJudgementCategory.ineffectiveOrTooLate;
-          _aiJudgementFeedback = "You wanted to prepare for $_currentWeatherEvent, but lacked the necessary tools! You need a Shovel.";
-        }
-      } else if ((playerInput.contains("ignore") || playerInput.contains("nothing"))) {
-        recognizedAction = true;
-        healthEffect -= (isDisaster ? 25 : 10);
-        potentialJudgement = AIJudgementCategory.ineffectiveOrTooLate;
-        _aiJudgementFeedback = "Ignoring $_currentWeatherEvent proved costly!";
+        healthEffect += 15;
+        potentialJudgement = AIJudgementCategory.smartAndEffective;
+        _aiJudgementFeedback = "You took smart steps to prepare the farm for $_currentWeatherEvent.";
+        effectiveActionTaken = true;
+
       } else if (playerInput.contains("harvest") && isDisaster && _currentDay < (_selectedSeedData?.harvestingDays ?? 99)) {
         recognizedAction = true;
         healthEffect -= 10;
         potentialJudgement = AIJudgementCategory.ineffectiveOrTooLate;
-        _aiJudgementFeedback = "Emergency harvest during $_currentWeatherEvent? Risky, might not yield much.";
+        _aiJudgementFeedback = "Emergency harvest during $_currentWeatherEvent? Risky, might not yield much later.";
       }
 
       if (!recognizedAction) {
         healthEffect -= (isDisaster ? 15 : 5);
         potentialJudgement = AIJudgementCategory.comedicUseless;
-        _aiJudgementFeedback = "'$playerInput'... an interesting response to $_currentWeatherEvent. The crops are confused.";
+        _aiJudgementFeedback = "'${weatherResponseController.text}'... an interesting response to $_currentWeatherEvent. The crops are confused.";
       }
+    }
+
+
+    double weatherDirectEffect = 0;
+    if (_currentWeatherEvent == 'Heatwave (El Nino)' || _currentWeatherEvent == 'Flooding' || _currentWeatherEvent == 'Typhoon' || _currentWeatherEvent == 'Locust Swarm') {
+       weatherDirectEffect = -20;
+    } else if (_currentWeatherEvent == 'Thunderstorm') {
+       weatherDirectEffect = -10;
+    } else if (_currentWeatherEvent == 'Sunny') {
+       weatherDirectEffect = 5;
+    } else if (_currentWeatherEvent == 'Rainy' || _currentWeatherEvent == 'Cloudy') {
+       weatherDirectEffect = 0;
     }
 
     double traitEffect = 0;
@@ -580,43 +755,47 @@ class _GameScreenState extends State<GameScreen> {
     bool weatherMatchesStrength = _selectedSeedData != null && _selectedSeedData!.strengths.contains(_currentWeatherEvent);
 
     if (weatherMatchesWeakness) {
-      traitEffect = isDisaster && effectiveActionTaken ? -5 : -15;
-      _cropStatusMessage = "${_currentWeatherEvent} impacted your crops!";
+      traitEffect = isDisaster ? -15 : -8;
+      _cropStatusMessage = "$_currentWeatherEvent impacted your crops!";
     } else if (weatherMatchesStrength) {
-      traitEffect = 8;
-      _cropStatusMessage = "${_currentWeatherEvent} was beneficial for your crops!";
+      traitEffect = isDisaster ? 5 : 8;
+      _cropStatusMessage = "$_currentWeatherEvent was beneficial for your crops!";
     } else {
       if (!_cropStatusMessage.contains("You ")) {
          _cropStatusMessage = "${_selectedSeedData?.name} status update:";
       }
     }
 
-    _cropHealth = (_cropHealth + healthEffect + traitEffect).clamp(0.0, 100.0);
+    _cropHealth = (_cropHealth + healthEffect + weatherDirectEffect + traitEffect).clamp(0.0, 100.0);
 
     if (_cropHealth <= 0) {
       _cropStatusMessage += "\nYour crops didn't survive the day.";
     } else {
-       if (!_cropStatusMessage.contains("withered")) {
+       if (!_cropStatusMessage.contains("withered") && !_cropStatusMessage.contains("impacted") && !_cropStatusMessage.contains("beneficial")) {
          _cropStatusMessage += " (Health: ${_cropHealth.toStringAsFixed(0)}%)";
+       } else if (_cropStatusMessage.contains("impacted") || _cropStatusMessage.contains("beneficial")) {
+          _cropStatusMessage += " (Health: ${_cropHealth.toStringAsFixed(0)}%)";
        }
     }
+
 
     _aiJudgement = potentialJudgement;
     weatherResponseController.clear();
 
     _logGameState(
         'WeatherEventOutcome',
-        eventDetails: 'Event: "$_currentWeatherEvent", PlayerInput: "$_playerWeatherResponse", HealthEffect: $healthEffect, TraitEffect: $traitEffect, TotalHealthChange: ${(_cropHealth - initialHealth).toStringAsFixed(1)}, FinalHealth: ${_cropHealth.toStringAsFixed(1)}, AIJudgement: ${_aiJudgement.toString().split('.').last}, Feedback: "$_aiJudgementFeedback"'
+        eventDetails: 'Event: "$_currentWeatherEvent", PlayerInput: "$_playerWeatherResponse", ActionHealthEffect: $healthEffect, WeatherDirectEffect: $weatherDirectEffect, TraitEffect: $traitEffect, TotalHealthChange: ${(_cropHealth - initialHealth - weatherDirectEffect - traitEffect).toStringAsFixed(1)} (Action), FinalHealth: ${_cropHealth.toStringAsFixed(1)}, AIJudgement: ${enumToString(_aiJudgement)}, Feedback: "$_aiJudgementFeedback"'
     );
 
     setState(() {
       _currentStage = GameStage.aiJudgement;
     });
      _logGameState('StageChange', eventDetails: 'AI Judgement');
+     await _saveGameState();
   }
 
-  // Proceeds from AI judgement to next day or harvest
-  void _proceedFromAIJudgement() {
+
+  void _proceedFromAIJudgement() async {
     if (_selectedSeedData == null) return;
 
     if (_currentDay >= (_selectedSeedData?.harvestingDays ?? 99) || _cropHealth <= 0) {
@@ -628,14 +807,15 @@ class _GameScreenState extends State<GameScreen> {
       setState(() {
         _currentDay++;
         _currentStage = GameStage.dailyCycle;
+        _cropStatusMessage = "${_selectedSeedData?.name} is growing...";
       });
       _logGameState('NewDay', eventDetails: 'Day $_currentDay started');
       _logGameState('StageChange', eventDetails: 'Daily Cycle');
+      await _saveGameState();
     }
   }
 
-  // Calculates the harvest results based on crop health and investment
-  void _calculateHarvest() {
+  void _calculateHarvest() async {
     if (_selectedSeedData == null) return;
 
     _logGameState('CalculatingHarvest', eventDetails: 'Starting harvest calculation...');
@@ -671,17 +851,26 @@ class _GameScreenState extends State<GameScreen> {
 
     _logGameState(
         'HarvestResults',
-        eventDetails: 'Quality: $_cropQuality, Investment: $_totalInvestment, HarvestValue: $_harvestValue, Profit/Loss: $_profitOrLoss, Outcome: $_gameOutcome'
+        eventDetails: 'Quality: $_cropQuality, Investment: $_totalInvestment, HarvestValue: $_harvestValue, Profit/Loss: $_profitOrLoss, Outcome: $_gameOutcome, NewMoney: $_money'
     );
 
     setState(() {
-      _currentStage = GameStage.showTips;
+      _currentStage = GameStage.results;
     });
-     _logGameState('StageChange', eventDetails: 'Show Tips Screen');
+     _logGameState('StageChange', eventDetails: 'Results Screen');
+     await _saveGameState();
   }
 
-  // Resets necessary state for a new season
-  void _resetGameForContinue() {
+  void _proceedFromResultsToTips() async {
+     setState(() {
+       _currentStage = GameStage.showTips;
+     });
+     _logGameState('StageChange', eventDetails: 'Show Tips Screen');
+     await _saveGameState();
+  }
+
+
+  void _resetGameForContinue() async {
     _generateRandomSeedOptions();
 
     setState(() {
@@ -698,22 +887,24 @@ class _GameScreenState extends State<GameScreen> {
         'Shovel': 1,
       };
     });
-     _logGameState('GameReset', eventDetails: 'Starting a new season.');
-     _logGameState('StageChange', eventDetails: 'Terrain Selection');
+     _logGameState('GameReset', eventDetails: 'Starting a new season. Money kept.');
+     _logGameState('StageChange', eventDetails: 'Terrain Selection (New Season)');
+     await _saveGameState();
   }
 
-  // Ends the current season and shows the summary tips screen
-  void _quitGame() {
+  void _quitGame() async {
      setState(() {
        _currentStage = GameStage.showTips;
-       _logGameState('GameEnded', eventDetails: 'Ended season. Money: ₱$_money. Outcome: $_gameOutcome');
-       _logGameState('StageChange', eventDetails: 'Show Tips Screen (Manual End)');
      });
+     _logGameState('GameEnded', eventDetails: 'Ended season. Money: ₱$_money. Outcome: $_gameOutcome');
+     _logGameState('StageChange', eventDetails: 'Show Tips Screen (Manual End)');
+     await _saveGameState();
   }
 
-  // Navigates back to the home screen after a loading state
-  void _goToHomeScreen() {
+  void _goToHomeScreen() async {
      _logGameState('AppQuitIntent', eventDetails: 'Returning to Home Screen via Tips');
+     await _clearSaveFile();
+
      setState(() {
        _currentStage = GameStage.loadingToHome;
      });
@@ -722,7 +913,6 @@ class _GameScreenState extends State<GameScreen> {
      WidgetsBinding.instance.addPostFrameCallback((_) async {
         await Future.delayed(const Duration(seconds: 2));
         if (mounted) {
-             _clearLogFile();
              Navigator.of(context).pushAndRemoveUntil(
                MaterialPageRoute(builder: (context) => HomeScreen()),
                    (Route<dynamic> route) => false,
@@ -731,13 +921,13 @@ class _GameScreenState extends State<GameScreen> {
      });
   }
 
-  // Determines the background image based on the current game stage or selected terrain
   String _getDynamicBackground() {
     if (_currentStage == GameStage.intro ||
         _currentStage == GameStage.terrainSelection ||
         _currentStage == GameStage.seedSelection ||
         _currentStage == GameStage.showTips ||
-        _currentStage == GameStage.loadingToHome
+        _currentStage == GameStage.loadingToHome ||
+        _currentStage == GameStage.loadingGame
         ) {
       return 'assets/images/Title Screen.png';
     }
@@ -782,7 +972,7 @@ class _GameScreenState extends State<GameScreen> {
     double topPadding = 80.0;
     double bottomPadding = bottomBarVisibleArea ? 150.0 : 40.0;
 
-    if (_currentStage == GameStage.intro) {
+    if (_currentStage == GameStage.intro || _currentStage == GameStage.loadingGame) {
        topPadding = 100.0;
        bottomPadding = 100.0;
     } else if (_currentStage == GameStage.loadingToHome) {
@@ -798,7 +988,7 @@ class _GameScreenState extends State<GameScreen> {
             width: double.infinity,
             height: double.infinity,
           ),
-          if (_currentStage != GameStage.loadingToHome)
+          if (_currentStage != GameStage.loadingToHome && _currentStage != GameStage.loadingGame)
             Positioned(
               top: topPadding,
               bottom: bottomPadding,
@@ -820,11 +1010,10 @@ class _GameScreenState extends State<GameScreen> {
               ),
             ),
 
-          // Loading screen content
-          if (_currentStage == GameStage.loadingToHome)
+          if (_currentStage == GameStage.loadingToHome || _currentStage == GameStage.loadingGame)
              Positioned.fill(
                 child: Container(
-                   color: Colors.black.withOpacity(0.5),
+                   color: Colors.black.withOpacity(0.7),
                    child: Center(
                        child: Column(
                            mainAxisAlignment: MainAxisAlignment.center,
@@ -832,7 +1021,10 @@ class _GameScreenState extends State<GameScreen> {
                            children: [
                                 CircularProgressIndicator(color: Colors.white),
                                 SizedBox(height: 20),
-                                Text("Returning to Home...", style: TextStyle(color: Colors.white, fontSize: 18, fontFamily: 'Futehodo-MaruGothic_1.00')),
+                                Text(
+                                   _currentStage == GameStage.loadingGame ? "Loading Game..." : "Returning to Home...",
+                                   style: TextStyle(color: Colors.white, fontSize: 18, fontFamily: 'Futehodo-MaruGothic_1.00')
+                                ),
                            ],
                        ),
                    ),
@@ -853,7 +1045,7 @@ class _GameScreenState extends State<GameScreen> {
                ),
              ),
 
-          if (inGameplay || _currentStage == GameStage.showTips)
+          if (bottomBarVisibleArea)
               Positioned(
                   bottom: 0,
                   left: 0,
@@ -977,7 +1169,6 @@ class _GameScreenState extends State<GameScreen> {
       );
   }
 
-  // Returns the widget corresponding to the current game stage
   Widget _buildCurrentStageWidget() {
     switch (_currentStage) {
       case GameStage.intro:
@@ -1019,15 +1210,21 @@ class _GameScreenState extends State<GameScreen> {
           ),
         );
       case GameStage.results:
+         WidgetsBinding.instance.addPostFrameCallback((_) async {
+            await Future.delayed(const Duration(seconds: 4));
+            if (mounted && _currentStage == GameStage.results) {
+               _proceedFromResultsToTips();
+            }
+         });
         return _buildResultsScreen();
       case GameStage.showTips:
         return _buildTipsScreen();
       case GameStage.loadingToHome:
-         return _buildLoadingToHomeScreen();
+      case GameStage.loadingGame:
+         return const SizedBox.shrink();
     }
   }
 
-  //For the intro messages
   Widget _buildIntro() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -1053,7 +1250,6 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  //Terrain selection
   Widget _buildTerrainSelection() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -1067,12 +1263,11 @@ class _GameScreenState extends State<GameScreen> {
                 () => _selectTerrain(entry.key),
             isMultiLine: true,
           ),
-        )),
+        )).toList(),
       ],
     );
   }
 
-  //Seed selection
   Widget _buildSeedSelection() {
     if (_availableSeedKeys.isEmpty) {
          return _paperContainer(child: Text("No seeds available this season!", style: TextStyle(color: Colors.red, fontFamily: 'Futehodo-MaruGothic_1.00')));
@@ -1103,6 +1298,7 @@ class _GameScreenState extends State<GameScreen> {
       }
       seedButtons.add(Row(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: rowChildren,
       ));
       if (i + 2 < availableSeedData.length) {
@@ -1138,7 +1334,7 @@ class _GameScreenState extends State<GameScreen> {
       children: [
         _paperContainer(
           child: Text(
-            "Day ${_currentDay}/${_selectedSeedData?.harvestingDays ?? 'N/A'}\nWhat will you do?",
+            "Day $_currentDay/${_selectedSeedData?.harvestingDays ?? 'N/A'}\nWhat will you do?",
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 20, fontFamily: 'Futehodo-MaruGothic_1.00', color: Colors.white),
           ),
@@ -1166,11 +1362,10 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  //For weather forecasting
   Widget buildWeatherForecastScreen() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if(_currentStage == GameStage.weatherForecast && mounted) {
-        await Future.delayed(Duration(seconds: 2));
+        await Future.delayed(const Duration(seconds: 2));
         if(mounted) {
           _generateWeatherForecast();
         }
@@ -1192,7 +1387,6 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  //Displays the weather event and hint
   Widget buildWeatherEventScreen() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_currentStage == GameStage.weatherEvent && mounted) {
@@ -1201,7 +1395,7 @@ class _GameScreenState extends State<GameScreen> {
         });
 
         _weatherImageTimer?.cancel();
-        _weatherImageTimer = Timer(const Duration(seconds: 5), () {
+        _weatherImageTimer = Timer(const Duration(seconds: 4), () {
           if (mounted) {
             setState(() {
               _showWeatherImageOverlay = false;
@@ -1229,7 +1423,6 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  //Player input during a weather event
   Widget _buildPlayerWeatherActionScreen() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -1261,8 +1454,14 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  //Displays the AI's judgement
   Widget _buildAIJudgementScreen() {
+     WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await Future.delayed(const Duration(seconds: 4));
+        if (mounted && _currentStage == GameStage.aiJudgement) {
+           _proceedFromAIJudgement();
+        }
+     });
+
     return _paperContainer(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -1287,17 +1486,13 @@ class _GameScreenState extends State<GameScreen> {
             Text(_aiJudgementFeedback, style: TextStyle(fontSize: 16, color: Colors.white70, fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center),
             SizedBox(height:20),
             Text("Crop Health: ${_cropHealth.toStringAsFixed(0)}%", style: TextStyle(fontSize: 18, color: _getHealthColor(_cropHealth), fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center,),
-            SizedBox(height:25),
-            _styledButton("Next Day", _proceedFromAIJudgement),
           ],
         )
     );
   }
 
-  // Displays the harvest results
   Widget _buildResultsScreen() {
     String? harvestImagePath = _getUIImageAsset('Harvest Time');
-    bool canContinue = _money >= 200;
 
     return _paperContainer(
         padding: const EdgeInsets.all(20),
@@ -1330,21 +1525,19 @@ class _GameScreenState extends State<GameScreen> {
             SizedBox(height: 15),
 
             Text("Overall Outcome: $_gameOutcome", style: TextStyle(fontSize: 22, color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center,),
-            SizedBox(height: 25),
-            if(canContinue)
-              _styledButton("Continue Planting (New Season)", _resetGameForContinue),
-            SizedBox(height: 10),
-            _styledButton("End Season Summary", _quitGame),
           ],
         )
     );
   }
 
-  //Displays game tips and season summary before returning home
   Widget _buildTipsScreen() {
     final random = Random();
     String tip = _gameTips[random.nextInt(_gameTips.length)];
     String? harvestImagePath = _getUIImageAsset('Harvest Time');
+
+    bool canContinueSeason = _money >= 10;
+    bool showContinueButton = _gameOutcome != "Failed Season" && canContinueSeason;
+
 
     return _paperContainer(
         padding: const EdgeInsets.all(20),
@@ -1373,30 +1566,27 @@ class _GameScreenState extends State<GameScreen> {
             Text("Crop Quality: $_cropQuality", style: TextStyle(fontSize: 18, color: _cropQuality == "Excellent" ? Colors.greenAccent : (_cropQuality == "Failed" ? Colors.redAccent : Colors.yellowAccent), fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center,),
             SizedBox(height: 4),
             Text("Profit / Loss: ₱$_profitOrLoss", style: TextStyle(fontSize: 20, color: _profitOrLoss >= 0 ? Colors.green : Colors.red, fontWeight: FontWeight.bold, fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center,),
+             SizedBox(height: 4),
+            Text("Current Money: ₱$_money", style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center,),
             SizedBox(height: 4),
             Text("Overall Outcome: $_gameOutcome", style: TextStyle(fontSize: 22, color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center,),
 
             SizedBox(height:25),
-            _styledButton("Back to Home Screen", _goToHomeScreen),
+            if(showContinueButton) ...[
+              _styledButton("Continue Planting (New Season)", _resetGameForContinue),
+              SizedBox(height: 10),
+            ],
+            _styledButton("End Game (Back to Home)", _goToHomeScreen),
           ],
         )
     );
   }
 
-  // Widget for the loading screen transition
+
   Widget _buildLoadingToHomeScreen() {
-      return Center(
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                  CircularProgressIndicator(color: const Color.fromARGB(255, 12, 222, 9)),
-                  SizedBox(height: 20),
-                  Text("Returning to Home...", style: TextStyle(color: Colors.white, fontSize: 18, fontFamily: 'Futehodo-MaruGothic_1.00')),
-              ],
-          ),
-      );
+      return const SizedBox.shrink();
   }
+
 
   Widget _styledButton(String label, VoidCallback? onPressed, {bool isMultiLine = false}) {
     return _paperContainer(
@@ -1423,10 +1613,14 @@ class _GameScreenState extends State<GameScreen> {
     required Widget child,
     EdgeInsets padding = const EdgeInsets.all(12),
     Alignment? alignment,
+    double? width,
+    double? height,
   }) {
     return Container(
       alignment: alignment,
       padding: padding,
+      width: width,
+      height: height,
       decoration: BoxDecoration(
         image: const DecorationImage(
           image: AssetImage('assets/images/Paper.png'),
@@ -1445,14 +1639,13 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  // Determines color based on crop health percentage
+
   Color _getHealthColor(double health){
     if(health > 75) return Colors.greenAccent.withOpacity(0.8);
     if(health > 45) return Colors.orangeAccent.withOpacity(0.8);
     return Colors.redAccent.withOpacity(0.8);
   }
 
-  // Returns a text description for crop status based on health
   String _getCropStatusText(double health) {
     if (health > 90) return "Excellent";
     if (health > 70) return "Good";
@@ -1462,22 +1655,34 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _uiInfoChip(String text, {IconData? icon, Color? statusColor}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: statusColor ?? Colors.blueGrey.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (icon != null) Icon(icon, color: Colors.white, size: 16),
-          if (icon != null) SizedBox(width: 5),
-          Flexible(child: Text(text, style: const TextStyle(color: Colors.white, fontSize: 13, fontFamily: 'Futehodo-MaruGothic_1.00', fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis)),
-        ],
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        margin: const EdgeInsets.symmetric(horizontal: 2),
+        decoration: BoxDecoration(
+          color: statusColor ?? Colors.blueGrey.withOpacity(0.8),
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (icon != null) Icon(icon, color: Colors.white, size: 14),
+            if (icon != null) SizedBox(width: 4),
+            Flexible(
+                child: Text(
+                    text,
+                    style: const TextStyle(color: Colors.white, fontSize: 12, fontFamily: 'Futehodo-MaruGothic_1.00', fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                )
+            ),
+          ],
+        ),
       ),
     );
   }
+
 
   @override
   void dispose() {

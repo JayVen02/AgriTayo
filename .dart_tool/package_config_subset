@@ -102,6 +102,10 @@ flutter_lints
 3.5
 file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_lints-5.0.0/
 file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_lints-5.0.0/lib/
+google_generative_ai
+3.1
+file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/google_generative_ai-0.4.7/
+file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/google_generative_ai-0.4.7/lib/
 google_identity_services_web
 3.4
 file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/google_identity_services_web-0.3.3+1/
@@ -127,9 +131,9 @@ google_sign_in_web
 file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in_web-0.12.4+4/
 file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in_web-0.12.4+4/lib/
 http
-2.19
-file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/http-0.13.6/
-file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/http-0.13.6/lib/
+3.4
+file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/http-1.4.0/
+file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/http-1.4.0/lib/
 http_parser
 3.4
 file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/http_parser-4.1.2/
@@ -204,8 +208,8 @@ file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/plugin_platform_in
 file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/plugin_platform_interface-2.1.8/lib/
 provider
 2.12
-file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/provider-6.1.4/
-file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/provider-6.1.4/lib/
+file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/provider-6.1.5/
+file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/provider-6.1.5/lib/
 source_span
 3.1
 file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/source_span-1.10.1/

@@ -28,20 +28,21 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 40),
               Column(
                 children: [
-                  const Text(
-                    'AgriMarket',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Futehodo-MaruGothic_1.00',
-                      color: Color(0xFF404040),
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-                  PressableText(text: 'AgriMarket'),
-                  const SizedBox(height: 30),
-                  // --- FIX STARTS HERE ---
-                  // Removed the incorrect nested MenuButton and extra parenthesis
+                  // --- Removed the non-pressable Text widget here ---
+                  // const Text(
+                  //   'AgriMarket',
+                  //   style: TextStyle(
+                  //     fontSize: 32,
+                  //     fontWeight: FontWeight.bold,
+                  //     fontFamily: 'Futehodo-MaruGothic_1.00',
+                  //     color: Color(0xFF404040),
+                  //   ),
+                  // ),
+                  // const SizedBox(height: 30), // Keep this SizedBox for spacing
+
+                  PressableText(text: 'AgriMarket'), // This one is pressable
+                  const SizedBox(height: 30), // Spacing after the pressable text
+
                   PressableMenuButton(
                     text: 'Play Game',
                     onPressed: () {
@@ -49,7 +50,6 @@ class HomeScreen extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 2),
-                  // --- FIX ENDS HERE ---
                   PressableMenuButton(
                     text: 'Credits',
                     onPressed: () {
