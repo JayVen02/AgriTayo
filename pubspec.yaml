@@ -27,6 +27,8 @@ dependencies:
   cloud_firestore: ^5.6.6
   provider: ^6.1.4
   google_sign_in: ^6.2.1
+  flutter_dotenv: ^5.0.2
+  http: ^0.13.5
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +58,10 @@ flutter:
       - assets\images\AgriTayo - Logo.png
       - assets\images\Union.png
       - assets\images\Title Screen.png
+      - assets\images\AgriBot.png
+      - .env
+      - assets\images\chatbotHovered.png
+      - assets\images\chatbot.png
       
 
   # An image asset can refer to one or more resolution-specific "variants", see
