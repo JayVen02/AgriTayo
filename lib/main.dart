@@ -1,16 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'firebase_options.dart';
 import 'authentication/login.dart';
 import 'screens/home.dart';
 import 'screens/marketplace_screen.dart';
 import 'screens/marketplace_screen2.dart';
 import 'screens/graph.dart';
+import 'chatbot/chatbot_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'screens/credit.dart';
+import 'screens/game_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  await FirebaseAppCheck.instance.activate(
+    androidProvider: AndroidProvider.playIntegrity,
   );
   runApp(const MyApp());
 }
@@ -23,7 +33,8 @@ class MyApp extends StatelessWidget {
       title: 'AgriTayo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 6, 236, 21)),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 6, 236, 21)),
         useMaterial3: true,
       ),
       initialRoute: '/login',
@@ -33,10 +44,10 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomeScreen(),
         '/marketplace_screen': (context) => const MarketplaceScreen(),
         '/marketplace_screen2': (context) => const FarmerDashboard(),
-  '/graph.dart': (context) => Graph(), 
-        // '/game': (context) => GameDashboard(),
-        // '/credits': (context) => CreditsScreen(),
-        // '/chatbot': (context) => ChatbotUI(),
+        '/graph.dart': (context) => Graph(), 
+        '/credits': (context) => const CreditsScreen(),
+        '/chatbot': (context) => const ChatbotScreen(),
+        '/game': (context) => const GameScreen(),
       },
     );
   }
