@@ -33,19 +33,19 @@
     },
     {
       "name": "cloud_firestore",
-      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore-5.6.6",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore-5.6.7",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
     {
       "name": "cloud_firestore_platform_interface",
-      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_platform_interface-6.6.6",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_platform_interface-6.6.7",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
     {
       "name": "cloud_firestore_web",
-      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_web-4.4.6",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_web-4.4.7",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     },
@@ -62,14 +62,44 @@
       "languageVersion": "3.1"
     },
     {
+      "name": "equatable",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/equatable-2.0.7",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "fake_async",
       "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/fake_async-1.3.2",
       "packageUri": "lib/",
       "languageVersion": "3.3"
     },
     {
+      "name": "ffi",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/ffi-2.1.4",
+      "packageUri": "lib/",
+      "languageVersion": "3.7"
+    },
+    {
+      "name": "firebase_app_check",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_app_check-0.3.2+5",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
+      "name": "firebase_app_check_platform_interface",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_app_check_platform_interface-0.1.1+5",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
+      "name": "firebase_app_check_web",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_app_check_web-0.2.0+9",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
+    },
+    {
       "name": "firebase_auth",
-      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth-5.5.2",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth-5.5.3",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
@@ -122,16 +152,28 @@
       "languageVersion": "3.4"
     },
     {
-      "name": "flame",
-      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/flame-1.28.1",
+      "name": "fl_chart",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/fl_chart-0.71.0",
       "packageUri": "lib/",
-      "languageVersion": "3.6"
+      "languageVersion": "3.2"
     },
     {
       "name": "flutter",
       "rootUri": "file:///C:/Users/joven/Downloads/src/flutter/packages/flutter",
       "packageUri": "lib/",
       "languageVersion": "3.7"
+    },
+    {
+      "name": "flutter_application_1",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_application_1-0.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.15"
+    },
+    {
+      "name": "flutter_dotenv",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_dotenv-5.2.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
     },
     {
       "name": "flutter_lints",
@@ -150,6 +192,12 @@
       "rootUri": "file:///C:/Users/joven/Downloads/src/flutter/packages/flutter_web_plugins",
       "packageUri": "lib/",
       "languageVersion": "3.7"
+    },
+    {
+      "name": "google_generative_ai",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/google_generative_ai-0.4.7",
+      "packageUri": "lib/",
+      "languageVersion": "3.1"
     },
     {
       "name": "google_identity_services_web",
@@ -189,7 +237,7 @@
     },
     {
       "name": "http",
-      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/http-1.3.0",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/http-1.4.0",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     },
@@ -248,16 +296,52 @@
       "languageVersion": "2.12"
     },
     {
-      "name": "ordered_set",
-      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/ordered_set-7.0.0",
-      "packageUri": "lib/",
-      "languageVersion": "3.4"
-    },
-    {
       "name": "path",
       "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/path-1.9.1",
       "packageUri": "lib/",
       "languageVersion": "3.4"
+    },
+    {
+      "name": "path_provider",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider-2.1.5",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
+    },
+    {
+      "name": "path_provider_android",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider_android-2.2.17",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
+    },
+    {
+      "name": "path_provider_foundation",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider_foundation-2.4.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
+      "name": "path_provider_linux",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider_linux-2.2.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.19"
+    },
+    {
+      "name": "path_provider_platform_interface",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider_platform_interface-2.1.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
+      "name": "path_provider_windows",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider_windows-2.3.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
+      "name": "platform",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/platform-3.1.6",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
     },
     {
       "name": "plugin_platform_interface",
@@ -267,7 +351,7 @@
     },
     {
       "name": "provider",
-      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/provider-6.1.4",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/provider-6.1.5",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -338,13 +422,19 @@
       "languageVersion": "3.4"
     },
     {
+      "name": "xdg_directories",
+      "rootUri": "file:///C:/Users/joven/AppData/Local/Pub/Cache/hosted/pub.dev/xdg_directories-1.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
       "name": "agritayo",
       "rootUri": "../",
       "packageUri": "lib/",
       "languageVersion": "3.7"
     }
   ],
-  "generated": "2025-05-04T06:15:39.216510Z",
+  "generated": "2025-05-12T19:50:30.343244Z",
   "generator": "pub",
   "generatorVersion": "3.7.2",
   "flutterRoot": "file:///C:/Users/joven/Downloads/src/flutter",

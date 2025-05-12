@@ -13,6 +13,7 @@ environment:
 # dependencies can be manually updated by changing the version numbers below to
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
+
 dependencies:
   flutter:
     sdk: flutter
@@ -20,13 +21,19 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
-  flame: ^1.27.0
   firebase_core: ^3.13.0
-  firebase_auth: ^5.5.2
+  firebase_auth: ^5.5.3
   firebase_storage: ^12.4.5
-  cloud_firestore: ^5.6.6
+  cloud_firestore: ^5.6.7
   provider: ^6.1.4
   google_sign_in: ^6.2.1
+  fl_chart: ^0.71.0
+  flutter_application_1: ^0.0.2
+  flutter_dotenv: ^5.0.2
+  http: ^1.4.0
+  firebase_app_check: ^0.3.2+5
+  path_provider: ^2.1.5
+  google_generative_ai: ^0.4.7
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +63,30 @@ flutter:
       - assets\images\AgriTayo - Logo.png
       - assets\images\Union.png
       - assets\images\Title Screen.png
+      - assets\images\AgriMarket.png
+      - assets\images\message.png
+      - assets\images\carrot.jpg
+      - assets\images\Paper.png
+      - assets\images\AgriBot.png
+      - .env
+      - assets\images\chatbotHovered.png
+      - assets\images\chatbot.png
+      - assets\images\Lowlands.png
+      - assets\images\Mountain.png
+      - assets\images\Hill.png
+      - assets\images\thunderstorm.png
+      - assets\images\HarvestTime 1.png
+      - assets\images\flooding.png
+      - assets\images\fertilizer.png
+      - assets\images\El Nino.png
+      - assets\images\cloud.png
+      - assets\images\Locust.png
+      - assets\images\sunny.png
+      - assets\images\shovel.png
+      - assets\images\rain.png
+      - assets\images\pest spray.png
+      - assets\images\typhoon.png
+      - assets\images\Profile_ManageProducts.png
       
 
   # An image asset can refer to one or more resolution-specific "variants", see
