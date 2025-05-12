@@ -13,7 +13,7 @@ Thumbs.db
 migrate_working_dir/
 .metadata
 *.tmp
-build/
+build
 
 # Flutter/Dart
 .dart_tool/

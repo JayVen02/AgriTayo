@@ -4,6 +4,12 @@ import 'package:firebase_app_check/firebase_app_check.dart';
 import 'firebase_options.dart';
 import 'authentication/login.dart';
 import 'screens/home.dart';
+<<<<<<< HEAD
+=======
+import 'screens/marketplace_screen.dart';
+import 'screens/marketplace_screen2.dart';
+import 'screens/graph.dart';
+>>>>>>> feature/marketplace
 import 'chatbot/chatbot_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'screens/credit.dart';
@@ -21,7 +27,6 @@ void main() async {
   );
   runApp(const MyApp());
 }
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -36,13 +41,23 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       initialRoute: '/login',
+       home: const FarmerDashboard(),
       routes: {
         '/login': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),
+<<<<<<< HEAD
         '/credits': (context) => const CreditsScreen(),
         '/chatbot': (context) => const ChatbotScreen(),
         '/game': (context) => const GameScreen(),
 
+=======
+        '/marketplace_screen': (context) => const MarketplaceScreen(),
+        '/marketplace_screen2': (context) => const FarmerDashboard(),
+        '/graph.dart': (context) => Graph(), 
+        '/credits': (context) => const CreditsScreen(),
+        '/chatbot': (context) => const ChatbotScreen(),
+        '/game': (context) => const GameScreen(),
+>>>>>>> feature/marketplace
       },
     );
   }

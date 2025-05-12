@@ -27,6 +27,8 @@ dependencies:
   cloud_firestore: ^5.6.7
   provider: ^6.1.4
   google_sign_in: ^6.2.1
+  fl_chart: ^0.71.0
+  flutter_application_1: ^0.0.2
   flutter_dotenv: ^5.0.2
   http: ^1.4.0
   firebase_app_check: ^0.3.2+5
@@ -61,6 +63,9 @@ flutter:
       - assets\images\AgriTayo - Logo.png
       - assets\images\Union.png
       - assets\images\Title Screen.png
+      - assets\images\AgriMarket.png
+      - assets\images\message.png
+      - assets\images\carrot.jpg
       - assets\images\Paper.png
       - assets\images\AgriBot.png
       - .env
