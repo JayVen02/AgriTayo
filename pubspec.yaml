@@ -86,6 +86,7 @@ flutter:
       - assets\images\rain.png
       - assets\images\pest spray.png
       - assets\images\typhoon.png
+      - assets\images\Profile_ManageProducts.png
       
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key});
 
@@ -21,10 +22,7 @@ class ChatScreen extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () {
-                    // Standard back navigation
-                    if (Navigator.canPop(context)) {
-                      Navigator.pop(context);
-                    }
+                    Navigator.pop(context);
                   },
                   child: const Icon(Icons.arrow_back, size: 28, color: Colors.black),
                 ),
@@ -32,12 +30,11 @@ class ChatScreen extends StatelessWidget {
                 const CircleAvatar(
                   backgroundColor: Colors.white,
                   radius: 16,
-                  // Consider using a more relevant icon or image
-                  child: Icon(Icons.person, color: Colors.purple), // Example: person icon
+                  child: Icon(Icons.person, color: Colors.purple), 
                 ),
                 const SizedBox(width: 12),
                 const Text(
-                  'Sigma Boy', // This seems to be the chat recipient's name
+                  'Sigma Boy',
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -51,32 +48,31 @@ class ChatScreen extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                // Example message bubbles - replace with actual message data
-                _messageBubble(width: 160, height: 40, text: "Hello!"),
+                _messageBubble(text: "Hello!"),
                 const SizedBox(height: 12),
-                _messageBubble(width: 200, height: 40, text: "How are you?", alignment: Alignment.centerRight, color: Colors.blue.shade300),
+                _messageBubble(text: "How are you?", alignment: Alignment.centerRight, color: Colors.blue.shade300),
                 const SizedBox(height: 12),
-                _messageBubble(width: 240, height: 200, text: "This is a longer message to demonstrate wrapping and height. What's the price of potatoes today?"),
+                _messageBubble(text: "This is a longer message to demonstrate wrapping and height. What's the price of potatoes today?"),
                 const SizedBox(height: 12),
-                _messageBubble(width: 180, height: 80, text: "Around 50 per kg.", alignment: Alignment.centerRight, color: Colors.blue.shade300),
+                _messageBubble(text: "Around 50 per kg.", alignment: Alignment.centerRight, color: Colors.blue.shade300),
               ],
             ),
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            color: const Color(0xFF8cc543), // Matches app bar gradient
+            color: const Color(0xFF8cc543),
             child: Row(
               children: [
-                const Icon(Icons.add_photo_alternate_outlined, color: Colors.white), // Changed from "upload"
+                const Icon(Icons.add_photo_alternate_outlined, color: Colors.white),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withOpacity(0.3),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Text( // This should be a TextField for input
+                    child: const Text(
                       "Write Message...",
                       style: TextStyle(color: Colors.white70),
                     ),
@@ -93,18 +89,16 @@ class ChatScreen extends StatelessWidget {
   }
 
   Widget _messageBubble({
-    required double width,
-    required double height,
-    String text = "", // Add text parameter
-    Alignment alignment = Alignment.centerLeft, // Add alignment
-    Color color = const Color(0xFF69B578), // Default bubble color (lighter green)
+    required String text,
+    Alignment alignment = Alignment.centerLeft,
+    Color color = const Color(0xFF69B578),
   }) {
     return Align(
       alignment: alignment,
       child: Container(
-        width: width,
-        // height: height, // Height can be dynamic based on text
+        constraints: const BoxConstraints(maxWidth: 250),
         padding: const EdgeInsets.all(12),
+        margin: alignment == Alignment.centerLeft ? const EdgeInsets.only(right: 40) : const EdgeInsets.only(left: 40),
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(16),

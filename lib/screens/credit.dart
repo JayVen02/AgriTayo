@@ -9,7 +9,6 @@ class CreditsScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFE8E282),
       body: Stack(
         children: [
-          // Background Image
           Positioned.fill(
             child: Image.asset(
               'assets/images/Title Screen.png',
@@ -22,7 +21,7 @@ class CreditsScreen extends StatelessWidget {
                 const SizedBox(height: 30),
                 Center(
                   child: Container(
-                    width: 320, // wider box
+                    width: 320,
                     height: 500,
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(

@@ -15,57 +15,52 @@ class HomeScreen extends StatelessWidget {
               fit: BoxFit.cover,
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 60),
-              Center(
-                child: Image.asset(
+          Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 150),
+
+                Image.asset(
                   'assets/images/AgriTayo - Logo.png',
-                  height: 80,
+                  height: 120,
                 ),
-              ),
-              const SizedBox(height: 40),
-              Column(
-                children: [
-                  // --- Removed the non-pressable Text widget here ---
-                  // const Text(
-                  //   'AgriMarket',
-                  //   style: TextStyle(
-                  //     fontSize: 32,
-                  //     fontWeight: FontWeight.bold,
-                  //     fontFamily: 'Futehodo-MaruGothic_1.00',
-                  //     color: Color(0xFF404040),
-                  //   ),
-                  // ),
-                  // const SizedBox(height: 30), // Keep this SizedBox for spacing
+                const SizedBox(height: 80),
 
-                  PressableText(text: 'AgriMarket'), // This one is pressable
-                  const SizedBox(height: 30), // Spacing after the pressable text
+                PressableText(
+                  text: 'AgriMarket',
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/marketplace_list');
+                  },
+                ),
+                const SizedBox(height: 30),
 
-                  PressableMenuButton(
-                    text: 'Play Game',
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/game');
-                    },
-                  ),
-                  const SizedBox(height: 2),
-                  PressableMenuButton(
-                    text: 'Credits',
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/credits');
-                    },
-                  ),
-                  const SizedBox(height: 2),
-                  PressableMenuButton(
-                    text: 'Quit',
-                    onPressed: () {
-                      exit(0);
-                    },
-                  ),
-                ],
-              ),
-            ],
+                Column(
+                  children: [
+                    PressableMenuButton(
+                      text: 'Play game',
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/game');
+                      },
+                    ),
+                    const SizedBox(height: 2),
+                     PressableMenuButton(
+                       text: 'Quit',
+                       onPressed: () {
+                         exit(0);
+                       },
+                     ),
+                    const SizedBox(height: 2),
+                    PressableMenuButton(
+                      text: 'Credits',
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/credits');
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
           const Positioned(
             bottom: 20,
@@ -125,8 +120,13 @@ class _PressableMenuButtonState extends State<PressableMenuButton> {
 
 class PressableText extends StatefulWidget {
   final String text;
+  final VoidCallback onPressed;
 
-  const PressableText({super.key, required this.text});
+  const PressableText({
+    super.key,
+    required this.text,
+    required this.onPressed,
+  });
 
   @override
   _PressableTextState createState() => _PressableTextState();
@@ -139,7 +139,10 @@ class _PressableTextState extends State<PressableText> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTapDown: (_) => setState(() => _isPressed = true),
-      onTapUp: (_) => setState(() => _isPressed = false),
+      onTapUp: (_) {
+        setState(() => _isPressed = false);
+        widget.onPressed();
+      },
       onTapCancel: () => setState(() => _isPressed = false),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 100),
