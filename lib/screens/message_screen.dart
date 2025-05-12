@@ -1,9 +1,4 @@
 import 'package:flutter/material.dart';
-// import 'marketplace_screen.dart'; // No longer needed for back navigation if using Navigator.pop
-
-// SigmaBoyApp class removed as ChatScreen is navigated to directly
-// and it shouldn't be a nested MaterialApp....
-
 class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key});
 

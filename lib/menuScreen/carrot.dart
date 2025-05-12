@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-// import 'package:flutter_application_1/menuScreen/message.dart'; // Removed as the file does not exist
-import '../main.dart';
 import 'message.dart';
-
-
+import '../screens/home.dart';
 
 class Carrot extends StatelessWidget {
   const Carrot({super.key});
@@ -21,47 +18,44 @@ class FullScreenImagePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
-        fit: StackFit.expand, // Makes the image cover the whole screen
+        fit: StackFit.expand,
         children: [
           Image.asset(
-            'assets/AgriMarket.png', // Replace with your image asset
+            'assets/AgriMarket.png',
             fit: BoxFit.cover,
           ),
           SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Top Row with Back Button and Profile
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Back Button
                       ElevatedButton(
                         onPressed: () {
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => MarketPricePage()), // Replace with your main page widget
+                            MaterialPageRoute(builder: (context) => HomeScreen()), 
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white, // Button background color
+                          backgroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20), // Rounded corners
-                            side: BorderSide(color: Colors.green), // Green border
+                            borderRadius: BorderRadius.circular(20),
+                            side: BorderSide(color: Colors.green),
                           ),
                         ),
                         child: Text(
                           "Back",
                           style: TextStyle(
-                            color: const Color.fromARGB(255, 0, 0, 0), // Text color
+                            color: const Color.fromARGB(255, 0, 0, 0),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
 
-                      // Profile Section
                       Row(
                         children: [
                           Column(
@@ -87,8 +81,8 @@ class FullScreenImagePage extends StatelessWidget {
                           ),
                           SizedBox(width: 8),
                           CircleAvatar(
-                            radius: 20, // Size of the circle
-                            backgroundImage: AssetImage('assets/AgriMarket.png'), // Replace with your image asset
+                            radius: 20,
+                            backgroundImage: AssetImage('assets/AgriMarket.png'), 
                           ),
                         ],
                       ),
@@ -99,21 +93,21 @@ class FullScreenImagePage extends StatelessWidget {
                 Expanded(
                   child: Center(
                     child: Container(
-                      width: 370, // Width of the outer box
-                      height: 600, // Height of the outer box
+                      width: 370, 
+                      height: 600, 
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(1), // Background color with opacity
+                        color: Colors.white.withOpacity(1), 
                         border: Border.all(
-                          color: const Color.fromARGB(255, 252, 178, 29), // Border color
-                          width: 10, // Border thickness
+                          color: const Color.fromARGB(255, 252, 178, 29),
+                          width: 10,
                         ),
-                        borderRadius: BorderRadius.circular(12), // Rounded corners
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       child: Stack(
                         children: [
                           Center(
                             child: Transform.translate(
-                              offset: Offset(-5, 1), // Move -20 on the x-axis and 0 on the y-axis
+                              offset: Offset(-5, 1), 
                               child: Text(
                                 'Name Here                  Price Here:\nBasic info Here:',
                                 style: TextStyle(
@@ -125,18 +119,18 @@ class FullScreenImagePage extends StatelessWidget {
                             ),
                           ),
                           Positioned(
-                            top: 40, // Offset on the y-axis
-                            left: 10, // Center the inner box horizontally
+                            top: 40,
+                            left: 10,
                             child: Container(
-                              width: 330, // Width of the inner box
-                              height: 200, // Height of the inner box
+                              width: 330,
+                              height: 200,
                               decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 232, 232, 232).withOpacity(0.8), // Background color for the inner box
+                                color: const Color.fromARGB(255, 232, 232, 232).withOpacity(0.8), 
                                 border: Border.all(
-                                  color: const Color.fromARGB(255, 236, 236, 236), // Border color for the inner box
-                                  width: 5, // Border thickness
+                                  color: const Color.fromARGB(255, 236, 236, 236), 
+                                  width: 5,
                                 ),
-                                borderRadius: BorderRadius.circular(16), // Rounded corners
+                                borderRadius: BorderRadius.circular(16), 
                               ),
                             ),
                             
@@ -145,7 +139,7 @@ class FullScreenImagePage extends StatelessWidget {
                             children: [
                               // Other widgets in the stack
                               Positioned(
-                                bottom: 15, // Offset from the bottom of the container
+                                bottom: 15, 
                                 left: 0,
                                 right: 0,
                                 child: Column(
@@ -193,32 +187,32 @@ class FullScreenImagePage extends StatelessWidget {
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.white, // Button text color
+                                          color: Colors.white, 
                                         ),
                                       ),
                                     ),
-                                    SizedBox(height: 16), // Spacing between buttons
+                                    SizedBox(height: 16),
                                     ElevatedButton(
                                       onPressed: () {
                                             Navigator.push(
                                               context,
-                                              MaterialPageRoute(builder: (context) => const SigmaBoyApp()),
+                                              MaterialPageRoute(builder: (context) => const messages()),
                                             );
                                         print("Message button pressed");
                                       },
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color.fromARGB(255, 198, 198, 198), // Button background color
+                                        backgroundColor: const Color.fromARGB(255, 198, 198, 198),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(20), // Rounded corners
+                                          borderRadius: BorderRadius.circular(20),
                                         ),
-                                        padding: EdgeInsets.symmetric(horizontal: 120, vertical: 12), // Button padding
+                                        padding: EdgeInsets.symmetric(horizontal: 120, vertical: 12), 
                                       ),
                                       child: Text(
                                         "Message",
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
-                                          color: const Color.fromARGB(255, 0, 183, 0), // Button text color
+                                          color: const Color.fromARGB(255, 0, 183, 0),
                                         ),
                                       ),
                                     ),

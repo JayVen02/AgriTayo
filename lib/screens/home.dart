@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-// import 'dart:io'; // Uncomment if you're using exit(0)
+import 'dart:io';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -29,14 +29,13 @@ class HomeScreen extends StatelessWidget {
               Column(
                 children: [
                   MenuButton(
-                    text: 'AgriMarket', //Namr of AgriMarket button
+                    text: 'AgriMarket',
                     onPressed: () {
                       Navigator.pushNamed(context, '/marketplace_screen2'); // 
                     },
                   ),
 
-                  const SizedBox(height: 30), // <-- Space between title and buttons
-                  // Buttons stacked tightly
+                  const SizedBox(height: 30), 
                   MenuButton(
                     text: 'Play Game',
                     onPressed: () {
@@ -52,7 +51,7 @@ class HomeScreen extends StatelessWidget {
                   MenuButton(
                     text: 'Quit',
                     onPressed: () {
-                      // exit(0); // Uncomment if needed
+                      exit(0);
                     },
                   ),
                 ],

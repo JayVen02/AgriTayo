@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'carrot.dart';
-
-
-class SigmaBoyApp extends StatelessWidget {
-  const SigmaBoyApp({super.key});
+class messages extends StatelessWidget {
+  const messages({super.key});
 
   @override
   Widget build(BuildContext context) {

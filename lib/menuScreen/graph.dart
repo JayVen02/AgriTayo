@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart'; // Import the fl_chart package
-import '../main.dart';
+import 'package:fl_chart/fl_chart.dart';
+import '../screens/home.dart';
 
 class Graph extends StatefulWidget {
   const Graph({super.key});
@@ -10,13 +10,13 @@ class Graph extends StatefulWidget {
 }
 
 class _MarketPricePageState extends State<Graph> {
-  bool isGraphExpanded = false; // Tracks whether the graph widget is expanded
-  bool isPriceListDisabled = false; // Tracks whether the price list is disabled
+  bool isGraphExpanded = false;
+  bool isPriceListDisabled = false; 
 
   void _onGraphClick() {
     setState(() {
-      isGraphExpanded = !isGraphExpanded; // Toggle graph expansion
-      isPriceListDisabled = isGraphExpanded; // Disable price list when graph is expanded
+      isGraphExpanded = !isGraphExpanded;
+      isPriceListDisabled = isGraphExpanded;
     });
   }
 
@@ -25,7 +25,6 @@ class _MarketPricePageState extends State<Graph> {
     return Scaffold(
       body: Stack(
         children: [
-          // 🔹 Background Image
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -38,7 +37,6 @@ class _MarketPricePageState extends State<Graph> {
           SafeArea(
             child: Column(
               children: [
-                // 🔹 Top bar
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   child: Row(
@@ -48,7 +46,7 @@ ElevatedButton(
   onPressed: () {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const MarketPricePage()), // Replace with your main page widget
+      MaterialPageRoute(builder: (context) => const HomeScreen()),
     );
   },
   style: ElevatedButton.styleFrom(
@@ -82,9 +80,8 @@ ElevatedButton(
                   ),
                 ),
 
-                // 🔹 Graph Section
                 GestureDetector(
-                  onTap: _onGraphClick, // Handle graph click
+                  onTap: _onGraphClick,
                   child: AnimatedContainer(
                     duration: Duration(milliseconds: 300),
                     margin: EdgeInsets.symmetric(horizontal: 16),
@@ -93,13 +90,13 @@ ElevatedButton(
                       color: Colors.yellow[100],
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    height: isGraphExpanded ? 300 : 120, // Expand height when clicked
+                    height: isGraphExpanded ? 300 : 120, 
                     child: Column(
                       children: [
                         Expanded(
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.orange, // Background color for the bar chart
+                              color: Colors.orange, 
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: isGraphExpanded
@@ -209,7 +206,6 @@ ElevatedButton(
                 ),
                 SizedBox(height: 12),
 
-                // 🔹 Price List
                 if (!isPriceListDisabled)
                   Expanded(
                     child: Container(
@@ -223,7 +219,6 @@ ElevatedButton(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Search Bar
                           Container(
                             padding: EdgeInsets.symmetric(horizontal: 12),
                             decoration: BoxDecoration(
