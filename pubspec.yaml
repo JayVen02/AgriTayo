@@ -27,16 +27,13 @@ dependencies:
   cloud_firestore: ^5.6.7
   provider: ^6.1.4
   google_sign_in: ^6.2.1
-<<<<<<< HEAD
   fl_chart: ^0.71.0
   flutter_application_1: ^0.0.2
-=======
   flutter_dotenv: ^5.0.2
   http: ^1.4.0
   firebase_app_check: ^0.3.2+5
   path_provider: ^2.1.5
   google_generative_ai: ^0.4.7
->>>>>>> 1a307dcb0ce5c885c2c7669f9874f463f78acf29
 
 dev_dependencies:
   flutter_test:
@@ -66,11 +63,9 @@ flutter:
       - assets\images\AgriTayo - Logo.png
       - assets\images\Union.png
       - assets\images\Title Screen.png
-<<<<<<< HEAD
       - assets\images\AgriMarket.png
       - assets\images\message.png
       - assets\images\carrot.jpg
-=======
       - assets\images\Paper.png
       - assets\images\AgriBot.png
       - .env
@@ -91,7 +86,6 @@ flutter:
       - assets\images\rain.png
       - assets\images\pest spray.png
       - assets\images\typhoon.png
->>>>>>> 1a307dcb0ce5c885c2c7669f9874f463f78acf29
       
 
   # An image asset can refer to one or more resolution-specific "variants", see
