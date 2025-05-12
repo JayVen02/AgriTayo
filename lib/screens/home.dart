@@ -28,12 +28,12 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 40),
               Column(
                 children: [
-MenuButton(
-  text: 'AgriMarket', //Namr of AgriMarket button
-  onPressed: () {
-    Navigator.pushNamed(context, '/marketplace_screen'); // 
-  },
-),
+                  MenuButton(
+                    text: 'AgriMarket', //Namr of AgriMarket button
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/marketplace_screen2'); // 
+                    },
+                  ),
 
                   const SizedBox(height: 30), // <-- Space between title and buttons
                   // Buttons stacked tightly
