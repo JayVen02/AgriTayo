@@ -4,17 +4,21 @@ import 'package:firebase_app_check/firebase_app_check.dart';
 import 'firebase_options.dart';
 import 'authentication/login.dart';
 import './screens/home.dart';
-import './screens//marketplace_screen.dart';
 import 'marketplace/graph.dart';
-import 'chatbot/chatbot_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import './screens/credit.dart';
+
+// AgriBot
+import 'chatbot/chatbot_screen.dart';
+
+// AgriLaro
 import './screens/game_screen.dart';
+
+// Agrimarket
+import './screens//marketplace_screen.dart';
 import './screens/profile_screen.dart';
-import './screens/message_screen.dart';
-import './screens/manage_product_screen.dart';
+import 'screens/chat_list_screen.dart';
 import 'screens/edit_profile_screen.dart';
-import 'screens/manage_product_detail_screen.dart';
 import 'screens/add_product_screen.dart';
 import 'screens/product_form_screen.dart';
 
@@ -45,6 +49,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(
             seedColor: const Color.fromARGB(255, 6, 236, 21)),
         useMaterial3: true,
+        fontFamily: 'Futehodo-MaruGothic_1.00',
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       initialRoute: '/login',
       routes: {
@@ -56,7 +62,7 @@ class MyApp extends StatelessWidget {
         '/chatbot': (context) => const ChatbotScreen(),
         '/game': (context) => const GameScreen(),
         '/profile': (context) => const ProfileScreen(),
-        '/chat': (context) => const ChatScreen(),
+        '/chat': (context) => const ChatListScreen(),
         '/manage_product_detail': (context) => const ProductFormScreen(),
         '/edit_profile': (context) => const EditProfileScreen(),
         '/add_product': (context) => const AddProductScreen(),

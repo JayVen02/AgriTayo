@@ -1,3 +1,4 @@
+// lib/screens/edit_profile_screen.dart
 import 'package:flutter/material.dart';
 
 class EditProfileScreen extends StatelessWidget {
@@ -6,15 +7,9 @@ class EditProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Edit Profile"),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
+      appBar: AppBar(title: const Text('Edit Profile')),
       body: const Center(
-        child: Text(
-          "Edit Profile Form Goes Here", 
-          textAlign: TextAlign.center,
-        ),
+        child: Text('Edit Profile Screen Placeholder'),
       ),
     );
   }

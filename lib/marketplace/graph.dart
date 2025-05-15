@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class DemandData {
   final String item;
@@ -10,13 +11,9 @@ class DemandData {
 
   factory DemandData.fromDocument(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>?;
-    if (data == null) {
-      throw StateError('Demand data document is null or empty');
-    }
-
+    if (data == null) throw StateError('Demand data document is null or empty');
     final List<dynamic> history = data['demand_history'] ?? [];
     final demandHistory = history.map((item) => DemandPeriod.fromMap(item as Map<String, dynamic>)).toList();
-
     return DemandData(
       item: data['item'] ?? 'Unknown Item',
       demandHistory: demandHistory,
@@ -32,20 +29,13 @@ class DemandPeriod {
 
   factory DemandPeriod.fromMap(Map<String, dynamic> map) {
     final value = map['value'];
-    double parsedValue;
-    if (value is num) {
-      parsedValue = value.toDouble();
-    } else {
-      parsedValue = 0.0;
-    }
-
+    double parsedValue = (value is num) ? value.toDouble() : 0.0;
     return DemandPeriod(
       period: map['period'] ?? 'N/A',
       value: parsedValue,
     );
   }
 }
-
 
 class GraphScreen extends StatefulWidget {
   const GraphScreen({super.key});
@@ -81,9 +71,12 @@ class _GraphScreenState extends State<GraphScreen> {
     }).toList();
   }
 
-
   @override
   Widget build(BuildContext context) {
+    final User? user = FirebaseAuth.instance.currentUser;
+    String firstName = (user?.displayName?.split(' ').first ?? 'Guest');
+    String? photoUrl = user?.photoURL;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -95,7 +88,6 @@ class _GraphScreenState extends State<GraphScreen> {
               ),
             ),
           ),
-
           SafeArea(
             child: Column(
               children: [
@@ -120,18 +112,20 @@ class _GraphScreenState extends State<GraphScreen> {
                           style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
                         ),
                       ),
-                      const Row(
+                      Row(
                         children: [
                           CircleAvatar(
-                            backgroundImage: AssetImage('assets/user.jpg'),
+                            backgroundImage: photoUrl != null
+                                ? NetworkImage(photoUrl)
+                                : const AssetImage('assets/user.jpg') as ImageProvider,
                             radius: 16,
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Name", style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text("Farmer", style: TextStyle(fontSize: 12)),
+                              Text(firstName, style: const TextStyle(fontWeight: FontWeight.bold)),
+                              const Text("Farmer", style: TextStyle(fontSize: 12)),
                             ],
                           )
                         ],
@@ -139,7 +133,6 @@ class _GraphScreenState extends State<GraphScreen> {
                     ],
                   ),
                 ),
-
                 GestureDetector(
                   onTap: _onGraphClick,
                   child: AnimatedContainer(
@@ -154,73 +147,58 @@ class _GraphScreenState extends State<GraphScreen> {
                     child: StreamBuilder<DocumentSnapshot>(
                       stream: FirebaseFirestore.instance.collection('demand_summary').doc('latest_monthly').snapshots(),
                       builder: (context, snapshot) {
-                         if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const Center(child: CircularProgressIndicator());
-                          }
-                          if (snapshot.hasError) {
-                            return Center(child: Text('Error loading demand data: ${snapshot.error}'));
-                          }
-                          if (!snapshot.hasData || !snapshot.data!.exists || snapshot.data!.data() == null) {
-                            return const Center(child: Text('No demand data available.'));
-                          }
-
-                          final demandData = DemandData.fromDocument(snapshot.data!);
-                          final barGroups = _buildBarGroups(demandData.demandHistory);
-
-                          return Column(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                   decoration: BoxDecoration(
-                                      color: Colors.orange[300],
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  child: isGraphExpanded
-                                      ? Center(
-                                          child: Text(
-                                            "Demand for ${demandData.item}\n(Expanded View)",
-                                            textAlign: TextAlign.center,
-                                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
-                                          ),
-                                        )
-                                      : barGroups.isNotEmpty 
-                                          ? Padding(
-                                             padding: const EdgeInsets.only(bottom: 8.0, left: 4.0, right: 4.0),
-                                             child: BarChart(
-                                                BarChartData(
-                                                  maxY: demandData.demandHistory.isNotEmpty ? demandData.demandHistory.map((e) => e.value).reduce((a, b) => a > b ? a : b) * 1.2 : 5,
-                                                  titlesData: FlTitlesData(show: false),
-                                                  borderData: FlBorderData(show: false),
-                                                  barGroups: barGroups,
-                                                   gridData: FlGridData(show: false),
-                                                ),
-                                              ),
-                                          )
-                                          : const Center(child: Text("Not enough data for graph.")),
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                        if (snapshot.hasError) {
+                          return Center(child: Text('Error loading demand data: ${snapshot.error}'));
+                        }
+                        if (!snapshot.hasData || !snapshot.data!.exists || snapshot.data!.data() == null) {
+                          return const Center(child: Text('No demand data available.'));
+                        }
+                        final demandData = DemandData.fromDocument(snapshot.data!);
+                        final barGroups = _buildBarGroups(demandData.demandHistory);
+                        return Column(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.orange[300],
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
+                                child: isGraphExpanded
+                                    ? Center(
+                                        child: Text(
+                                          "Demand Graph for ${demandData.item}\n(Expanded View)",
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+                                        ),
+                                      )
+                                    : barGroups.isNotEmpty
+                                        ? Padding(
+                                            padding: const EdgeInsets.only(bottom: 8.0, left: 4.0, right: 4.0),
+                                            child: BarChart(
+                                              BarChartData(
+                                                maxY: demandData.demandHistory.map((e) => e.value).reduce((a, b) => a > b ? a : b) * 1.2,
+                                                titlesData: FlTitlesData(show: false),
+                                                borderData: FlBorderData(show: false),
+                                                barGroups: barGroups,
+                                                gridData: FlGridData(show: false),
+                                              ),
+                                            ),
+                                          )
+                                        : const Center(child: Text("Not enough data for graph.")),
                               ),
-                              const SizedBox(height: 4),
-                              Text("Demand for ${demandData.item}", style: const TextStyle(fontWeight: FontWeight.bold)),
-                            ],
-                          );
+                            ),
+                            const SizedBox(height: 4),
+                            Text("Demand for ${demandData.item}", style: const TextStyle(fontWeight: FontWeight.bold)),
+                          ],
+                        );
                       },
                     ),
                   ),
                 ),
                 const SizedBox(height: 12),
-
-                 const Spacer(),
-                 Container(
-                   height: 150,
-                   decoration: const BoxDecoration(
-                     gradient: LinearGradient(
-                       colors: [Color(0xFF8BC34A), Color(0xFF4CAF50)],
-                       begin: Alignment.topCenter,
-                       end: Alignment.bottomCenter,
-                     ),
-                     borderRadius: BorderRadius.vertical(top: Radius.circular(60)),
-                   ),
-                 ),
               ],
             ),
           ),

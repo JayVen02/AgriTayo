@@ -13,10 +13,11 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _isLoading = false;
+  bool _isEmailLoading = false;
+  bool _isGoogleLoading = false;
 
   Future<void> _signInWithEmailAndPassword() async {
-    setState(() => _isLoading = true);
+    setState(() => _isEmailLoading = true);
     try {
       UserCredential userCredential =
           await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -43,12 +44,12 @@ class _LoginScreenState extends State<LoginScreen> {
         SnackBar(content: Text(message)),
       );
     } finally {
-      setState(() => _isLoading = false);
+      setState(() => _isEmailLoading = false);
     }
   }
 
   Future<void> _signInWithGoogle() async {
-    setState(() => _isLoading = true);
+    setState(() => _isGoogleLoading = true);
     try {
       AuthService authService = AuthService();
       UserCredential? userCredential = await authService.signInWithGoogle();
@@ -68,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
         SnackBar(content: Text("Error: $e")),
       );
     } finally {
-      setState(() => _isLoading = false);
+      setState(() => _isGoogleLoading = false);
     }
   }
 
@@ -111,9 +112,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 16),
                     _buildInputField("Password", _passwordController, obscure: true),
                     const SizedBox(height: 20),
-                    _buildActionButton("Sign in", _signInWithEmailAndPassword),
+                    _buildEmailSignInButton(),
                     const SizedBox(height: 12),
-                    _buildActionButton("Sign in with Google", _signInWithGoogle),
+                    _buildGoogleSignInButton(),
                     const SizedBox(height: 24),
                     Container(
                       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
@@ -164,11 +165,11 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildActionButton(String text, VoidCallback onPressed) {
+  Widget _buildEmailSignInButton() {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: _isLoading ? null : onPressed,
+        onPressed: (_isEmailLoading || _isGoogleLoading) ? null : _signInWithEmailAndPassword,
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 14),
           backgroundColor: Colors.white,
@@ -177,10 +178,33 @@ class _LoginScreenState extends State<LoginScreen> {
             borderRadius: BorderRadius.circular(30),
           ),
         ),
-        child: _isLoading
+        child: _isEmailLoading
             ? const CircularProgressIndicator()
             : Text(
-                text,
+                "Sign in",
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+      ),
+    );
+  }
+
+  Widget _buildGoogleSignInButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: (_isEmailLoading || _isGoogleLoading) ? null : _signInWithGoogle,
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+        ),
+        child: _isGoogleLoading
+            ? const CircularProgressIndicator()
+            : Text(
+                "Sign in with Google",
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
       ),

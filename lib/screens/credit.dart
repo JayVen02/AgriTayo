@@ -54,7 +54,7 @@ class CreditsScreen extends StatelessWidget {
                               ),
                               SizedBox(height: 20),
                               Text(
-                                'Joven Rosales\nFull Stack Developer & Project Lead',
+                                'Joven Rosales\nDeveloper & Project Lead',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
@@ -74,7 +74,7 @@ class CreditsScreen extends StatelessWidget {
                               ),
                               SizedBox(height: 12),
                               Text(
-                                'Girlyver Jandayan\nFront-End Developer',
+                                'Girlyver Jandayan\nDeveloper',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
@@ -84,7 +84,7 @@ class CreditsScreen extends StatelessWidget {
                               ),
                               SizedBox(height: 12),
                               Text(
-                                'Romulo Tristan Rodriguez\nUI/UX Designer',
+                                'Romulo Tristan Rodriguez\nDesigner',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,

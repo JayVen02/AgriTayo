@@ -1,27 +1,10 @@
 # AgriTayo
 Our APAC Solution Challenge Applications, AgriTayo (Lets do aggriculture)
 
-### Run flutter doctor to ensure your environment is set up correctly.
+AgriTayo is a digital farming platform designed to educate, empower, and connect farmers, especially the younger generation, through three key features: AgriLaro, a 2D interactive game for learning farming basics with scenario-based challenges and AI feedback, AgriMarket, a real-world online marketplace for farmers to sell crops directly to buyers, with AI providing market trend insights and AgriBot, an AI chatbot offering farming tips and answering user questions.
 
-## Dependencies
-### Flame & Firebase (Flutter Packages)
-- flutter pub add flame
-- flutter pub add firebase_core
-- flutter pub add firebase_auth
-- flutter pub add cloud_firestore
 
-### Firebase
-- npm install -g firebase-tools
-- firebase login
-
-## Run the Application
-- flutter run
-
-## Run the Firebase Simulators (For testing Purposes)
-- firebase emulators: start
-
-## Getting Started
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-- [online documentation](https://docs.flutter.dev/)
+## Features:
+- AgriMarket - A smarter online marketplace for farmers. Get live crop prices, demand trends, and direct buyer connections. Think Facebook Marketplace, but built for farmers and way more insightful with AI-powered market data
+- AgriBot - Your pocket farming assistant. Answer your question, Instant tips, weather warnings, and crop care advice.
+- AgriLaro - Gamified farming education that makes learning fun and practical. Users face scenario-based challenges with dynamic outcomes, weather events, and AI feedback to sharpen their farming decisions.

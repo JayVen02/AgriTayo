@@ -126,6 +126,8 @@ class _GameScreenState extends State<GameScreen> {
 
   final TextEditingController weatherResponseController = TextEditingController();
 
+  bool _isProcessingSelection = false;
+
   final Map<String, String> _terrainDescriptions = {
     'Mountain': 'Cold climate, rocky soil, high elevation.',
     'Hills': 'Mild climate, good drainage.',
@@ -138,31 +140,31 @@ class _GameScreenState extends State<GameScreen> {
         harvestingDays: 12,
         iconAsset: 'assets/images/adlay_seed_icon.png',
         strengths: ['Rainy', 'Flooding'],
-        weaknesses: ['Heatwave', 'Locust Swarm']),
+        weaknesses: ['Heatwave (El Nino)', 'Locust Swarm']),
     'Corn': SeedData(
         name: 'Corn',
         harvestingDays: 9,
         iconAsset: 'assets/images/corn_seed_icon.png',
-        strengths: ['Sunny', 'Heatwave'],
+        strengths: ['Sunny', 'Heatwave (El Nino)'],
         weaknesses: ['Flooding', 'Thunderstorm']),
     'Potatoes': SeedData(
         name: 'Potatoes',
         harvestingDays: 10,
         iconAsset: 'assets/images/potato_seed_icon.png',
         strengths: ['Cloudy', 'Thunderstorm'],
-        weaknesses: ['Heatwave', 'Locust Swarm']),
+        weaknesses: ['Heatwave (El Nino)', 'Locust Swarm']),
     'Tomato': SeedData(
         name: 'Tomato',
         harvestingDays: 7,
         iconAsset: 'assets/images/tomato_seed_icon.png',
         strengths: ['Sunny'],
-        weaknesses: ['Typhoon', 'Flooding', 'Heatwave']),
+        weaknesses: ['Typhoon', 'Flooding', 'Heatwave (El Nino)']),
     'Mango': SeedData(
-        name: 'Mango',
-        harvestingDays: 15,
-        iconAsset: 'assets/images/mango_seed_icon.png',
-        strengths: ['Sunny', 'Heatwave'],
-        weaknesses: ['Typhoon', 'Locust Swarm']),
+         name: 'Mango',
+         harvestingDays: 15,
+         iconAsset: 'assets/images/mango_seed_icon.png',
+         strengths: ['Sunny', 'Heatwave (El Nino)'],
+         weaknesses: ['Typhoon', 'Locust Swarm']),
      'Coconut': SeedData(
          name: 'Coconut',
          harvestingDays: 18,
@@ -174,7 +176,7 @@ class _GameScreenState extends State<GameScreen> {
          harvestingDays: 8,
          iconAsset: 'assets/images/ampalaya_seed_icon.png',
          strengths: ['Rainy', 'Cloudy'],
-         weaknesses: ['Heatwave', 'Locust Swarm', 'Pests']),
+         weaknesses: ['Heatwave (El Nino)', 'Locust Swarm', 'Pests']),
   };
 
   List<String> _availableSeedKeys = [];
@@ -195,7 +197,6 @@ class _GameScreenState extends State<GameScreen> {
     'Locust Swarm',
     'Flooding'
   ];
-  List<String> _allWeatherEvents = [];
 
   final Map<String, String> _weatherImageAssets = {
     'Sunny': 'assets/images/sunny.png',
@@ -258,13 +259,13 @@ class _GameScreenState extends State<GameScreen> {
       'profitOrLoss': _profitOrLoss,
       'gameOutcome': _gameOutcome,
       'availableSeedKeys': _availableSeedKeys,
+      'isProcessingSelection': _isProcessingSelection,
     };
 
     try {
       final jsonString = jsonEncode(state);
       await file.writeAsString(jsonString);
-      print('Game state saved successfully.');
-       _logGameState('Save', eventDetails: 'Game state saved.');
+      _logGameState('Save', eventDetails: 'Game state saved.');
     } catch (e) {
       print('Error saving game state: $e');
        _logGameState('Error', eventDetails: 'Error saving game state: $e');
@@ -315,16 +316,17 @@ class _GameScreenState extends State<GameScreen> {
           _profitOrLoss = state['profitOrLoss'] ?? 0;
           _gameOutcome = state['gameOutcome'] ?? "";
           _availableSeedKeys = List<String>.from(state['availableSeedKeys'] ?? []);
+
+          _isProcessingSelection = state['isProcessingSelection'] ?? false;
         });
       }
-      print('Game state loaded successfully.');
-      _logGameState('Load', eventDetails: 'Game state loaded.');
+      print('Game state loaded successfully. Resuming at stage: $_currentStage');
+      _logGameState('LoadSuccess', eventDetails: 'Game state loaded. Resuming at stage: $_currentStage');
       return true;
 
     } catch (e) {
       print('Error loading game state: $e');
       _logGameState('Error', eventDetails: 'Error loading game state: $e');
-      // _clearSaveFile();
       return false;
     }
   }
@@ -334,7 +336,6 @@ class _GameScreenState extends State<GameScreen> {
     try {
       if (await file.exists()) {
         await file.delete();
-        print('Game state save file cleared.');
         _logGameState('Save', eventDetails: 'Game state save file cleared.');
       }
     } catch (e) {
@@ -378,6 +379,7 @@ class _GameScreenState extends State<GameScreen> {
           'profitOrLoss': _profitOrLoss,
           'gameOutcome': _gameOutcome,
         },
+        'isProcessingSelection': _isProcessingSelection,
       };
 
       final String jsonLine = jsonEncode(stateSnapshot);
@@ -402,24 +404,30 @@ class _GameScreenState extends State<GameScreen> {
   @override
   void initState() {
     super.initState();
-    _allWeatherEvents = [..._normalWeatherEvents, ..._disasterWeatherEvents];
     _clearLogFile();
 
     if (widget.loadGame) {
       _currentStage = GameStage.loadingGame;
-      _logGameState('StageChange', eventDetails: 'Loading Game');
+      _logGameState('StageChange', eventDetails: 'Initiating Game Load');
       _loadGameState().then((loaded) {
         if (!mounted) return;
         if (loaded) {
           print('Game loaded, resuming at stage: $_currentStage');
-           _logGameState('Load', eventDetails: 'Resuming at stage: $_currentStage');
+           _logGameState('LoadSuccess', eventDetails: 'Resuming at stage: $_currentStage');
+           if (_currentStage == GameStage.terrainSelection || _currentStage == GameStage.seedSelection || _currentStage == GameStage.showTips) {
+             setState(() {
+               _isProcessingSelection = false;
+             });
+           }
         } else {
           print('Load failed or no save found, starting new game.');
+          _logGameState('LoadFailed', eventDetails: 'No save found or load error, starting new game.');
           _startIntroSequence();
         }
       });
     } else {
       _clearSaveFile();
+      _clearLogFile();
       _startIntroSequence();
     }
   }
@@ -427,35 +435,73 @@ class _GameScreenState extends State<GameScreen> {
   void _startIntroSequence() async {
     if (!mounted) return;
     setState(() => _currentStage = GameStage.intro);
-    _logGameState('StageChange', eventDetails: 'Intro');
+    _logGameState('StageChange', eventDetails: 'Intro Started');
     for (int i = 0; i < _introMessages.length; i++) {
       if (!mounted) return;
       setState(() => _currentMessageIndex = i);
       await Future.delayed(Duration(seconds: i == 0 ? 2 : 3));
     }
     if (!mounted) return;
-    setState(() => _currentStage = GameStage.terrainSelection);
+    setState(() {
+       _currentStage = GameStage.terrainSelection;
+       _isProcessingSelection = false;
+    });
      _logGameState('StageChange', eventDetails: 'Terrain Selection');
      await _saveGameState();
   }
 
   void _skipIntro() async {
-    setState(() => _currentStage = GameStage.terrainSelection);
+    if (_isProcessingSelection && _currentStage == GameStage.intro) {
+        return;
+    }
+     if (!mounted) return;
+     setState(() {
+       _isProcessingSelection = true;
+     });
+
+    if (!mounted) return;
+     setState(() {
+       _currentStage = GameStage.terrainSelection;
+     });
     _logGameState('Action', eventDetails: 'Skipped Intro');
     _logGameState('StageChange', eventDetails: 'Terrain Selection');
     await _saveGameState();
+
+     if (!mounted) return;
+     setState(() {
+        _isProcessingSelection = false;
+     });
   }
 
+
   void _selectTerrain(String terrain) async {
+    if (_isProcessingSelection) {
+       return;
+    }
+
+     if (!mounted) return;
+     setState(() {
+       _isProcessingSelection = true;
+     });
+
     _generateRandomSeedOptions();
 
+    if (!mounted) return;
     setState(() {
       _selectedTerrain = terrain;
       _currentStage = GameStage.seedSelection;
     });
     _logGameState('Action', eventDetails: 'Selected Terrain: $terrain');
     _logGameState('StageChange', eventDetails: 'Seed Selection');
+
+    await Future.delayed(const Duration(milliseconds: 100));
+
     await _saveGameState();
+
+    if (!mounted) return;
+     setState(() {
+        _isProcessingSelection = false;
+     });
   }
 
   void _generateRandomSeedOptions() {
@@ -467,6 +513,26 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _selectSeed(String seedKey) async {
+     if (_isProcessingSelection) {
+        return;
+     }
+
+    if (_seedInfo[seedKey] == null) {
+      print("Error: Selected unknown seed key: $seedKey");
+      _logGameState('Error', eventDetails: 'Attempted to select unknown seed: $seedKey');
+       if (!mounted) return;
+       setState(() {
+         _isProcessingSelection = false;
+       });
+      return;
+    }
+
+     if (!mounted) return;
+     setState(() {
+       _isProcessingSelection = true;
+     });
+
+    if (!mounted) return;
     setState(() {
       _selectedSeedData = _seedInfo[seedKey];
       _totalInvestment = 0;
@@ -477,16 +543,28 @@ class _GameScreenState extends State<GameScreen> {
         'Pest Spray': 2,
         'Shovel': 1,
       };
-      _cropStatusMessage = "Planted ${_selectedSeedData!.name}!";
+      _cropStatusMessage = "Planted ${_selectedSeedData!.name}! Day $_currentDay";
       _currentStage = GameStage.dailyCycle;
     });
-    _logGameState('Action', eventDetails: 'Selected Seed: $seedKey');
+
+    await Future.delayed(const Duration(milliseconds: 100));
+
+    _logGameState('Action', eventDetails: 'Selected Seed: $seedKey. New Season Started.');
     _logGameState('StageChange', eventDetails: 'Daily Cycle');
     await _saveGameState();
+
+     if (!mounted) return;
+     setState(() {
+        _isProcessingSelection = false;
+     });
   }
 
   void _handleDailyAction(DailyAction action) async {
-    if (_selectedSeedData == null) return;
+    if (_selectedSeedData == null) {
+        _logGameState('Error', eventDetails: 'Attempted DailyAction with null _selectedSeedData');
+        return;
+    }
+
     String actionMessage = "";
     int cost = 0;
     double healthChange = 0;
@@ -539,19 +617,20 @@ class _GameScreenState extends State<GameScreen> {
       case DailyAction.prepareSoil:
         cost = 10;
         itemConsumed = 'Shovel';
-        if ((_inventory[itemConsumed] ?? 0) > 0 && _money >= cost) {
-          _money -= cost;
-          _totalInvestment += cost;
-          actionMessage = "You prepared the soil. Cost: ₱$cost";
-          healthChange = 8;
-        } else {
-          canPerformAction = false;
-          if (_money < cost) {
-            actionMessage = "Not enough money to prepare soil! Needs ₱$cost.";
-          } else {
-            actionMessage = "You need a Shovel to prepare the soil! You have ${_inventory[itemConsumed] ?? 0}.";
-          }
-        }
+         if ((_inventory[itemConsumed] ?? 0) > 0 && _money >= cost) {
+            _money -= cost;
+            _totalInvestment += cost;
+             _inventory[itemConsumed] = (_inventory[itemConsumed] ?? 0) - 1;
+            actionMessage = "You prepared the soil (Used 1x $itemConsumed). Cost: ₱$cost";
+            healthChange = 8;
+         } else {
+            canPerformAction = false;
+             if (_money < cost) {
+                actionMessage = "Not enough money to prepare soil! Needs ₱$cost.";
+             } else {
+                actionMessage = "You need a Shovel to prepare the soil! You have ${_inventory[itemConsumed] ?? 0}.";
+             }
+         }
         break;
       case DailyAction.doNothing:
         actionMessage = "You chose to do nothing for the day.";
@@ -564,15 +643,17 @@ class _GameScreenState extends State<GameScreen> {
 
       _logGameState(
         'DailyActionOutcome',
-        eventDetails: '${enumToString(action)} - Success: $canPerformAction, HealthChange: $healthChange, NewHealth: $_cropHealth',
+        eventDetails: '${enumToString(action)} - Success: $canPerformAction, HealthChange: ${healthChange.toStringAsFixed(1)}, NewHealth: ${_cropHealth.toStringAsFixed(1)}',
       );
 
       if (_cropHealth <= 0) {
-        _cropStatusMessage = "$actionMessage Your crops have withered!";
+        _cropStatusMessage = "$actionMessage\nYour crops withered during the day!";
       } else {
-        _cropStatusMessage = "$actionMessage Crop health: ${_cropHealth.toStringAsFixed(1)}%";
+         _cropStatusMessage = "$actionMessage (Health: ${_cropHealth.toStringAsFixed(0)}%)";
       }
 
+
+      if (!mounted) return;
       setState(() {
         _currentStage = GameStage.weatherForecast;
       });
@@ -580,85 +661,73 @@ class _GameScreenState extends State<GameScreen> {
       await _saveGameState();
 
     } else {
+      if (!mounted) return;
       setState(() {
         _cropStatusMessage = actionMessage;
       });
        _logGameState(
         'DailyActionOutcome',
-        eventDetails: '${enumToString(action)} - Failed (Insufficient Funds/Items)',
+        eventDetails: '${enumToString(action)} - Failed (Insufficient Funds/Items): $actionMessage',
       );
+       await _saveGameState();
     }
   }
 
   void _generateWeatherForecast() {
-    if (_selectedSeedData == null) return;
+    if (_selectedSeedData == null) {
+         _logGameState('Error', eventDetails: 'Attempted Weather Forecast with null _selectedSeedData');
+        return;
+    }
     final random = Random();
-    String upcomingWeather;
+    String upcomingWeatherHint = "An interesting weather pattern is forming.";
+    String actualWeatherEvent;
 
-    bool isDisasterForecastLikely = random.nextDouble() < 0.3;
+    bool isActualWeatherDisaster = random.nextDouble() < 0.25;
 
-    if (isDisasterForecastLikely) {
-      if (_selectedSeedData!.weaknesses.isNotEmpty && random.nextBool()) {
-        List<String> possibleDisasters = _disasterWeatherEvents.where(_selectedSeedData!.weaknesses.contains).toList();
-        if(possibleDisasters.isNotEmpty){
-          upcomingWeather = possibleDisasters[random.nextInt(possibleDisasters.length)];
-          _currentWeatherHint = "Warning! A challenging weather event related to ${_selectedSeedData!.weaknesses.join('/')} might be coming: '$upcomingWeather'.";
-        } else {
-          upcomingWeather = _disasterWeatherEvents[random.nextInt(_disasterWeatherEvents.length)];
-          _currentWeatherHint = "The air feels heavy... Expect potential danger.";
-        }
-      } else {
-        upcomingWeather = _disasterWeatherEvents[random.nextInt(_disasterWeatherEvents.length)];
-        _currentWeatherHint = "Be prepared! Extreme weather is possible.";
-      }
-    } else {
-      if (_selectedSeedData!.strengths.isNotEmpty && random.nextBool()) {
-        List<String> possibleNormalStrengths = _normalWeatherEvents.where(_selectedSeedData!.strengths.contains).toList();
-        if(possibleNormalStrengths.isNotEmpty){
-          upcomingWeather = possibleNormalStrengths[random.nextInt(possibleNormalStrengths.length)];
-          _currentWeatherHint = "Forecast looks good! Weather favorable to your crops might arrive: '$upcomingWeather'.";
-        } else {
-          upcomingWeather = _normalWeatherEvents[random.nextInt(_normalWeatherEvents.length)];
-          _currentWeatherHint = "Expect typical weather conditions.";
-        }
-      } else {
-        upcomingWeather = _normalWeatherEvents[random.nextInt(_normalWeatherEvents.length)];
-        _currentWeatherHint = "An interesting weather pattern is forming.";
-      }
-    }
-
-    bool isActualWeatherDisaster = random.nextDouble() < 0.2;
     if (isActualWeatherDisaster) {
-       if (_selectedSeedData!.weaknesses.isNotEmpty && random.nextDouble() < 0.4) {
-          _currentWeatherEvent = _selectedSeedData!.weaknesses[random.nextInt(_selectedSeedData!.weaknesses.length)];
+       List<String> possibleDisasters = _disasterWeatherEvents.toList();
+       List<String> weaknessDisasters = _selectedSeedData!.weaknesses.where(_disasterWeatherEvents.contains).toList();
+
+       if (weaknessDisasters.isNotEmpty && random.nextDouble() < 0.6) {
+          actualWeatherEvent = weaknessDisasters[random.nextInt(weaknessDisasters.length)];
+          upcomingWeatherHint = "Warning! Weather unfavorable to your crops, potentially '${actualWeatherEvent}', might be coming.";
        } else {
-          _currentWeatherEvent = _disasterWeatherEvents[random.nextInt(_disasterWeatherEvents.length)];
+          actualWeatherEvent = possibleDisasters[random.nextInt(possibleDisasters.length)];
+          upcomingWeatherHint = "Be prepared! Extreme weather is possible.";
        }
     } else {
-       if (_selectedSeedData!.strengths.isNotEmpty && random.nextDouble() < 0.4) {
-           List<String> normalStrengths = _selectedSeedData!.strengths.where((s) => _normalWeatherEvents.contains(s)).toList();
-           if(normalStrengths.isNotEmpty) {
-              _currentWeatherEvent = normalStrengths[random.nextInt(normalStrengths.length)];
-           } else {
-              _currentWeatherEvent = _normalWeatherEvents[random.nextInt(_normalWeatherEvents.length)];
-           }
+       List<String> possibleNormalEvents = _normalWeatherEvents.toList();
+       List<String> strengthNormalEvents = _selectedSeedData!.strengths.where(_normalWeatherEvents.contains).toList();
+
+       if (strengthNormalEvents.isNotEmpty && random.nextDouble() < 0.6) {
+          actualWeatherEvent = strengthNormalEvents[random.nextInt(strengthNormalEvents.length)];
+           upcomingWeatherHint = "Forecast looks good! Weather favorable to your crops, possibly '${actualWeatherEvent}', is expected.";
        } else {
-          _currentWeatherEvent = _normalWeatherEvents[random.nextInt(_normalWeatherEvents.length)];
+          actualWeatherEvent = possibleNormalEvents[random.nextInt(possibleNormalEvents.length)];
+          upcomingWeatherHint = "Expect typical weather conditions.";
        }
     }
 
+    _currentWeatherHint = upcomingWeatherHint;
+    _currentWeatherEvent = actualWeatherEvent;
 
+    if (!mounted) return;
     setState(() {
       _currentStage = GameStage.weatherEvent;
     });
     _logGameState(
         'WeatherGenerated',
-        eventDetails: 'Forecast: $_currentWeatherHint, Actual: $_currentWeatherEvent'
+        eventDetails: 'ForecastHint: "$_currentWeatherHint", ActualEvent: "$_currentWeatherEvent"'
     );
      _logGameState('StageChange', eventDetails: 'Weather Event');
   }
 
   void _processPlayerWeatherAction() async {
+    if (_selectedSeedData == null) {
+        _logGameState('Error', eventDetails: 'Attempted Weather Action processing with null _selectedSeedData');
+        return;
+    }
+
     final playerInput = weatherResponseController.text.toLowerCase().trim();
     _playerWeatherResponse = playerInput.isEmpty ? "[No Action]" : playerInput;
 
@@ -670,74 +739,87 @@ class _GameScreenState extends State<GameScreen> {
     bool isDisaster = _disasterWeatherEvents.contains(_currentWeatherEvent);
     _aiJudgementFeedback = "";
     AIJudgementCategory potentialJudgement = AIJudgementCategory.comedicUseless;
-    double healthEffect = 0;
+    double healthEffectFromAction = 0;
     bool recognizedAction = false;
-    bool effectiveActionTaken = false;
 
     double initialHealth = _cropHealth;
 
     if (playerInput.isEmpty || playerInput.contains("do nothing") || playerInput.contains("nothing")) {
         recognizedAction = true;
-        healthEffect -= (isDisaster ? 25 : 10);
+        healthEffectFromAction -= (isDisaster ? 25 : 10);
         potentialJudgement = AIJudgementCategory.ineffectiveOrTooLate;
         _aiJudgementFeedback = playerInput.isEmpty ? "You didn't react to $_currentWeatherEvent." : "'${weatherResponseController.text}'... Ignoring $_currentWeatherEvent proved costly!";
     } else {
-      if ((playerInput.contains("spray") || playerInput.contains("pest") || playerInput.contains("bug")) && (_currentWeatherEvent == 'Locust Swarm')) {
+      if ((playerInput.contains("spray") || playerInput.contains("pest") || playerInput.contains("bug")) && (_currentWeatherEvent == 'Locust Swarm' || (_selectedSeedData!.weaknesses.contains('Pests') && !isDisaster))) {
         recognizedAction = true;
         String item = 'Pest Spray';
         if ((_inventory[item] ?? 0) > 0) {
           _inventory[item] = (_inventory[item] ?? 0) - 1;
-          healthEffect += 30;
+          healthEffectFromAction += (_currentWeatherEvent == 'Locust Swarm' ? 30 : 15);
           potentialJudgement = AIJudgementCategory.smartAndEffective;
-          _aiJudgementFeedback = "Using $item directly against the $_currentWeatherEvent was highly effective!";
-          effectiveActionTaken = true;
+          _aiJudgementFeedback = (_currentWeatherEvent == 'Locust Swarm') ? "Using $item directly against the $_currentWeatherEvent was highly effective!" : "Using $item helped control pests.";
         } else {
-          healthEffect -= 15;
+          healthEffectFromAction -= (isDisaster ? 15 : 5);
           potentialJudgement = AIJudgementCategory.ineffectiveOrTooLate;
-          _aiJudgementFeedback = "You tried to use $item against $_currentWeatherEvent but didn't have any left! You have ${_inventory[item] ?? 0}.";
+          _aiJudgementFeedback = "You tried to use $item but didn't have any left! You have ${_inventory[item] ?? 0}.";
         }
       } else if ((playerInput.contains("fertilize") || playerInput.contains("nutrients")) && !isDisaster) {
          recognizedAction = true;
          String item = 'Fertilizer';
          if ((_inventory[item] ?? 0) > 0) {
             _inventory[item] = (_inventory[item] ?? 0) - 1;
-            healthEffect += 15;
+            healthEffectFromAction += 15;
             potentialJudgement = AIJudgementCategory.smartAndEffective;
             _aiJudgementFeedback = "Applying $item provided valuable nutrients for growth.";
-            effectiveActionTaken = true;
          } else {
-            healthEffect -= 5;
+            healthEffectFromAction -= 5;
             potentialJudgement = AIJudgementCategory.ineffectiveOrTooLate;
             _aiJudgementFeedback = "You wanted to fertilize but ran out! You have ${_inventory[item] ?? 0}.";
          }
-      } else if ((playerInput.contains("water") || playerInput.contains("irrigate")) && (_currentWeatherEvent == "Heatwave (El Nino)" || _currentWeatherEvent == "Sunny" || _currentWeatherEvent == "Cloudy")) {
+      } else if ((playerInput.contains("water") || playerInput.contains("irrigate")) && (_currentWeatherEvent == "Heatwave (El Nino)" || _currentWeatherEvent == "Sunny" || _currentWeatherEvent == "Cloudy" || _currentWeatherEvent == "Thunderstorm")) {
         recognizedAction = true;
-        healthEffect += (isDisaster ? 20 : 10);
-        potentialJudgement = AIJudgementCategory.smartAndEffective;
-        _aiJudgementFeedback = "Watering helped counter the dry effects of $_currentWeatherEvent.";
-        effectiveActionTaken = true;
-      } else if ((playerInput.contains("prepare") || playerInput.contains("reinforce") || playerInput.contains("secure")) && isDisaster) {
+        double effect = 0;
+        String feedback = "";
+        AIJudgementCategory judgement = AIJudgementCategory.smartAndEffective;
+
+        if(_currentWeatherEvent == "Heatwave (El Nino)" || _currentWeatherEvent == "Sunny") {
+            effect = 20;
+            feedback = "Watering helped counter the dry effects of $_currentWeatherEvent.";
+        } else if (_currentWeatherEvent == "Cloudy") {
+             effect = 5;
+             feedback = "Watering during cloudy weather provides some moisture.";
+        } else if (_currentWeatherEvent == "Thunderstorm") {
+            effect = 10;
+            feedback = "Watering after the thunderstorm helped the crops recover.";
+        } else {
+             effect = 0;
+             feedback = "Your watering didn't seem to have a strong effect on the weather.";
+             judgement = AIJudgementCategory.comedicUseless;
+        }
+
+        healthEffectFromAction += effect;
+        potentialJudgement = judgement;
+        _aiJudgementFeedback = feedback;
+
+      } else if ((playerInput.contains("prepare") || playerInput.contains("reinforce") || playerInput.contains("secure") || playerInput.contains("protect")) && isDisaster) {
         recognizedAction = true;
-        String item = 'Shovel';
-        healthEffect += 15;
+        healthEffectFromAction += 15;
         potentialJudgement = AIJudgementCategory.smartAndEffective;
-        _aiJudgementFeedback = "You took smart steps to prepare the farm for $_currentWeatherEvent.";
-        effectiveActionTaken = true;
+        _aiJudgementFeedback = "You took smart steps to prepare the farm for $_currentWeatherEvent, mitigating some damage.";
 
       } else if (playerInput.contains("harvest") && isDisaster && _currentDay < (_selectedSeedData?.harvestingDays ?? 99)) {
         recognizedAction = true;
-        healthEffect -= 10;
+        healthEffectFromAction -= 10;
         potentialJudgement = AIJudgementCategory.ineffectiveOrTooLate;
         _aiJudgementFeedback = "Emergency harvest during $_currentWeatherEvent? Risky, might not yield much later.";
       }
 
       if (!recognizedAction) {
-        healthEffect -= (isDisaster ? 15 : 5);
+        healthEffectFromAction -= (isDisaster ? 15 : 5);
         potentialJudgement = AIJudgementCategory.comedicUseless;
         _aiJudgementFeedback = "'${weatherResponseController.text}'... an interesting response to $_currentWeatherEvent. The crops are confused.";
       }
     }
-
 
     double weatherDirectEffect = 0;
     if (_currentWeatherEvent == 'Heatwave (El Nino)' || _currentWeatherEvent == 'Flooding' || _currentWeatherEvent == 'Typhoon' || _currentWeatherEvent == 'Locust Swarm') {
@@ -756,26 +838,36 @@ class _GameScreenState extends State<GameScreen> {
 
     if (weatherMatchesWeakness) {
       traitEffect = isDisaster ? -15 : -8;
-      _cropStatusMessage = "$_currentWeatherEvent impacted your crops!";
+       if (!_cropStatusMessage.startsWith("You ")) {
+         _cropStatusMessage = "$_currentWeatherEvent negatively impacted your crops!";
+       } else {
+          _cropStatusMessage += "\n...and ${_currentWeatherEvent} negatively impacted your crops!";
+       }
+
     } else if (weatherMatchesStrength) {
       traitEffect = isDisaster ? 5 : 8;
-      _cropStatusMessage = "$_currentWeatherEvent was beneficial for your crops!";
+       if (!_cropStatusMessage.startsWith("You ")) {
+         _cropStatusMessage = "$_currentWeatherEvent was beneficial for your crops!";
+       } else {
+          _cropStatusMessage += "\n...and ${_currentWeatherEvent} was beneficial for your crops!";
+       }
     } else {
-      if (!_cropStatusMessage.contains("You ")) {
-         _cropStatusMessage = "${_selectedSeedData?.name} status update:";
+      if (!_cropStatusMessage.startsWith("You ") && !_cropStatusMessage.contains("impacted") && !_cropStatusMessage.contains("beneficial")) {
+         _cropStatusMessage = "${_selectedSeedData?.name} status after $_currentWeatherEvent:";
       }
     }
 
-    _cropHealth = (_cropHealth + healthEffect + weatherDirectEffect + traitEffect).clamp(0.0, 100.0);
+    _cropHealth = (_cropHealth + healthEffectFromAction + weatherDirectEffect + traitEffect).clamp(0.0, 100.0);
 
     if (_cropHealth <= 0) {
-      _cropStatusMessage += "\nYour crops didn't survive the day.";
+      if (!_cropStatusMessage.contains("withered")) {
+         _cropStatusMessage += "\nYour crops didn't survive the day.";
+      }
     } else {
-       if (!_cropStatusMessage.contains("withered") && !_cropStatusMessage.contains("impacted") && !_cropStatusMessage.contains("beneficial")) {
-         _cropStatusMessage += " (Health: ${_cropHealth.toStringAsFixed(0)}%)";
-       } else if (_cropStatusMessage.contains("impacted") || _cropStatusMessage.contains("beneficial")) {
-          _cropStatusMessage += " (Health: ${_cropHealth.toStringAsFixed(0)}%)";
+       if (_cropStatusMessage.contains("(Health:")) {
+          _cropStatusMessage = _cropStatusMessage.split('(Health:')[0].trim();
        }
+       _cropStatusMessage += " (Health: ${_cropHealth.toStringAsFixed(0)}%)";
     }
 
 
@@ -784,9 +876,10 @@ class _GameScreenState extends State<GameScreen> {
 
     _logGameState(
         'WeatherEventOutcome',
-        eventDetails: 'Event: "$_currentWeatherEvent", PlayerInput: "$_playerWeatherResponse", ActionHealthEffect: $healthEffect, WeatherDirectEffect: $weatherDirectEffect, TraitEffect: $traitEffect, TotalHealthChange: ${(_cropHealth - initialHealth - weatherDirectEffect - traitEffect).toStringAsFixed(1)} (Action), FinalHealth: ${_cropHealth.toStringAsFixed(1)}, AIJudgement: ${enumToString(_aiJudgement)}, Feedback: "$_aiJudgementFeedback"'
+        eventDetails: 'Event: "$_currentWeatherEvent", PlayerInput: "$_playerWeatherResponse", ActionHealthEffect: ${healthEffectFromAction.toStringAsFixed(1)}, WeatherDirectEffect: ${weatherDirectEffect.toStringAsFixed(1)}, TraitEffect: ${traitEffect.toStringAsFixed(1)}, TotalHealthChange: ${(healthEffectFromAction + weatherDirectEffect + traitEffect).toStringAsFixed(1)}, FinalHealth: ${_cropHealth.toStringAsFixed(1)}, AIJudgement: ${enumToString(_aiJudgement)}, Feedback: "$_aiJudgementFeedback"'
     );
 
+    if (!mounted) return;
     setState(() {
       _currentStage = GameStage.aiJudgement;
     });
@@ -796,18 +889,23 @@ class _GameScreenState extends State<GameScreen> {
 
 
   void _proceedFromAIJudgement() async {
-    if (_selectedSeedData == null) return;
+    if (_selectedSeedData == null) {
+        _logGameState('Error', eventDetails: 'Attempted proceedFromAIJudgement with null _selectedSeedData');
+        return;
+    }
 
     if (_currentDay >= (_selectedSeedData?.harvestingDays ?? 99) || _cropHealth <= 0) {
+      if (!mounted) return;
       setState(() {
         _currentStage = GameStage.harvesting;
       });
       _logGameState('StageChange', eventDetails: 'Harvesting');
     } else {
+      if (!mounted) return;
       setState(() {
         _currentDay++;
         _currentStage = GameStage.dailyCycle;
-        _cropStatusMessage = "${_selectedSeedData?.name} is growing...";
+        _cropStatusMessage = "${_selectedSeedData?.name} is growing... Day $_currentDay";
       });
       _logGameState('NewDay', eventDetails: 'Day $_currentDay started');
       _logGameState('StageChange', eventDetails: 'Daily Cycle');
@@ -816,7 +914,10 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _calculateHarvest() async {
-    if (_selectedSeedData == null) return;
+    if (_selectedSeedData == null) {
+         _logGameState('Error', eventDetails: 'Attempted harvest calculation with null _selectedSeedData');
+        return;
+    }
 
     _logGameState('CalculatingHarvest', eventDetails: 'Starting harvest calculation...');
 
@@ -834,7 +935,7 @@ class _GameScreenState extends State<GameScreen> {
                                (_cropQuality == "Poor") ? 0.4 : 0.0;
 
     _harvestValue = (_cropHealth <= 0 || _cropQuality == "Failed") ? 0 :
-      (baseValuePerDay * _selectedSeedData!.harvestingDays * qualityMultiplier * (_cropHealth / 100.0)).toInt();
+      ((baseValuePerDay * _selectedSeedData!.harvestingDays * qualityMultiplier) * (_cropHealth / 100.0)).toInt();
 
     _profitOrLoss = _harvestValue - _totalInvestment;
     _money += _profitOrLoss;
@@ -843,9 +944,12 @@ class _GameScreenState extends State<GameScreen> {
       _gameOutcome = "Great Success!";
     } else if (_profitOrLoss > 0 && (_cropQuality == "Excellent" || _cropQuality == "Good")) {
        _gameOutcome = "Success!";
-    } else if (_profitOrLoss >= -50 && (_cropQuality == "Average" || _cropQuality == "Poor")) {
-      _gameOutcome = "Barely Survived";
-    } else {
+    } else if (_profitOrLoss >= 0 && (_cropQuality == "Average" || _cropQuality == "Poor")) {
+       _gameOutcome = "Season Survived";
+    } else if (_profitOrLoss >= -50 && _cropQuality != "Failed") {
+        _gameOutcome = "Barely Survived";
+    }
+    else {
       _gameOutcome = "Failed Season";
     }
 
@@ -854,6 +958,7 @@ class _GameScreenState extends State<GameScreen> {
         eventDetails: 'Quality: $_cropQuality, Investment: $_totalInvestment, HarvestValue: $_harvestValue, Profit/Loss: $_profitOrLoss, Outcome: $_gameOutcome, NewMoney: $_money'
     );
 
+    if (!mounted) return;
     setState(() {
       _currentStage = GameStage.results;
     });
@@ -862,6 +967,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _proceedFromResultsToTips() async {
+     if (!mounted) return;
      setState(() {
        _currentStage = GameStage.showTips;
      });
@@ -871,8 +977,18 @@ class _GameScreenState extends State<GameScreen> {
 
 
   void _resetGameForContinue() async {
+     if (_isProcessingSelection) {
+        return;
+     }
+
+    if (!mounted) return;
+     setState(() {
+       _isProcessingSelection = true;
+     });
+
     _generateRandomSeedOptions();
 
+    if (!mounted) return;
     setState(() {
       _currentStage = GameStage.terrainSelection;
       _selectedTerrain = null;
@@ -881,37 +997,45 @@ class _GameScreenState extends State<GameScreen> {
       _cropHealth = 100.0;
       _cropStatusMessage = "Ready for a new season!";
       _totalInvestment = 0;
-      _inventory = {
-        'Fertilizer': 2,
-        'Pest Spray': 2,
-        'Shovel': 1,
-      };
+      _inventory = _inventory;
+
+      _cropQuality = "Unknown";
+      _harvestValue = 0;
+      _profitOrLoss = 0;
+      _gameOutcome = "";
+
     });
-     _logGameState('GameReset', eventDetails: 'Starting a new season. Money kept.');
+     _logGameState('GameReset', eventDetails: 'Starting a new season. Money: ₱$_money, Inventory: $_inventory');
      _logGameState('StageChange', eventDetails: 'Terrain Selection (New Season)');
      await _saveGameState();
+
+     if (!mounted) return;
+     setState(() {
+        _isProcessingSelection = false;
+     });
   }
 
-  void _quitGame() async {
-     setState(() {
-       _currentStage = GameStage.showTips;
-     });
-     _logGameState('GameEnded', eventDetails: 'Ended season. Money: ₱$_money. Outcome: $_gameOutcome');
-     _logGameState('StageChange', eventDetails: 'Show Tips Screen (Manual End)');
-     await _saveGameState();
-  }
 
   void _goToHomeScreen() async {
-     _logGameState('AppQuitIntent', eventDetails: 'Returning to Home Screen via Tips');
+     if (_isProcessingSelection) {
+        return;
+     }
+     if (!mounted) return;
+     setState(() {
+       _isProcessingSelection = true;
+     });
+
+     _logGameState('AppQuitIntent', eventDetails: 'Returning to Home Screen from Tips');
      await _clearSaveFile();
 
+     if (!mounted) return;
      setState(() {
        _currentStage = GameStage.loadingToHome;
      });
      _logGameState('StageChange', eventDetails: 'Loading to Home Screen');
 
      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        await Future.delayed(const Duration(seconds: 2));
+        await Future.delayed(const Duration(seconds: 1));
         if (mounted) {
              Navigator.of(context).pushAndRemoveUntil(
                MaterialPageRoute(builder: (context) => HomeScreen()),
@@ -923,11 +1047,11 @@ class _GameScreenState extends State<GameScreen> {
 
   String _getDynamicBackground() {
     if (_currentStage == GameStage.intro ||
-        _currentStage == GameStage.terrainSelection ||
-        _currentStage == GameStage.seedSelection ||
         _currentStage == GameStage.showTips ||
         _currentStage == GameStage.loadingToHome ||
-        _currentStage == GameStage.loadingGame
+        _currentStage == GameStage.loadingGame ||
+        _currentStage == GameStage.terrainSelection ||
+        _currentStage == GameStage.seedSelection
         ) {
       return 'assets/images/Title Screen.png';
     }
@@ -939,6 +1063,7 @@ class _GameScreenState extends State<GameScreen> {
         case 'Lowlands': return 'assets/images/Lowlands.png';
       }
     }
+
     return 'assets/images/Title Screen.png';
   }
 
@@ -957,7 +1082,7 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bool inGameplay = [
+    bool bottomBarVisibleArea = [
       GameStage.dailyCycle,
       GameStage.weatherForecast,
       GameStage.weatherEvent,
@@ -965,9 +1090,8 @@ class _GameScreenState extends State<GameScreen> {
       GameStage.aiJudgement,
       GameStage.harvesting,
       GameStage.results,
+      GameStage.showTips,
     ].contains(_currentStage);
-
-    bool bottomBarVisibleArea = inGameplay || _currentStage == GameStage.showTips;
 
     double topPadding = 80.0;
     double bottomPadding = bottomBarVisibleArea ? 150.0 : 40.0;
@@ -979,32 +1103,30 @@ class _GameScreenState extends State<GameScreen> {
        topPadding = 0; bottomPadding = 0;
     }
 
+
     return Scaffold(
       body: Stack(
         children: [
-          Image.asset(
-            _getDynamicBackground(),
-            fit: BoxFit.cover,
-            width: double.infinity,
-            height: double.infinity,
+          Positioned.fill(
+             child: Image.asset(
+                _getDynamicBackground(),
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(color: Colors.green[700]),
+             ),
           ),
+
           if (_currentStage != GameStage.loadingToHome && _currentStage != GameStage.loadingGame)
             Positioned(
               top: topPadding,
               bottom: bottomPadding,
               left: 0,
               right: 0,
-              child: Align(
-                 alignment: Alignment.center,
-                 child: SingleChildScrollView(
-                   physics: const AlwaysScrollableScrollPhysics(),
-                   child: Column(
-                     mainAxisSize: MainAxisSize.min,
-                     mainAxisAlignment: MainAxisAlignment.center,
-                     crossAxisAlignment: CrossAxisAlignment.center,
-                     children: [
-                       _buildCurrentStageWidget(),
-                     ],
+              child: Center(
+                 child: Padding(
+                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                   child: SingleChildScrollView(
+                     physics: const BouncingScrollPhysics(),
+                     child: _buildCurrentStageWidget(),
                    ),
                  ),
               ),
@@ -1013,7 +1135,7 @@ class _GameScreenState extends State<GameScreen> {
           if (_currentStage == GameStage.loadingToHome || _currentStage == GameStage.loadingGame)
              Positioned.fill(
                 child: Container(
-                   color: Colors.black.withOpacity(0.7),
+                   color: Colors.black.withOpacity(0.8),
                    child: Center(
                        child: Column(
                            mainAxisAlignment: MainAxisAlignment.center,
@@ -1031,17 +1153,13 @@ class _GameScreenState extends State<GameScreen> {
                 ),
              ),
 
-          if (_showWeatherImageOverlay)
+          if (_showWeatherImageOverlay && _currentWeatherEvent != null)
              Positioned(
                top: 80,
                left: 0,
                right: 0,
-               child: AnimatedOpacity(
-                 opacity: _showWeatherImageOverlay ? 1.0 : 0.0,
-                 duration: const Duration(milliseconds: 500),
-                 child: Center(
-                   child: _buildWeatherImageOverlayWidget(),
-                 ),
+               child: Center(
+                 child: _buildWeatherImageOverlayWidget(),
                ),
              ),
 
@@ -1056,13 +1174,18 @@ class _GameScreenState extends State<GameScreen> {
                        child: Column(
                            mainAxisSize: MainAxisSize.min,
                            children: [
-                               Row(
-                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                      _buildItemInfoWidget('Fertilizer', _inventory['Fertilizer'] ?? 0),
-                                      _buildItemInfoWidget('Pest Spray', _inventory['Pest Spray'] ?? 0),
-                                      _buildItemInfoWidget('Shovel', _inventory['Shovel'] ?? 0),
-                                  ],
+                               Padding(
+                                 padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                 child: Row(
+                                   mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                        _buildItemInfoWidget('Fertilizer', _inventory['Fertilizer'] ?? 0),
+                                        SizedBox(width: 2),
+                                        _buildItemInfoWidget('Pest Spray', _inventory['Pest Spray'] ?? 0),
+                                        SizedBox(width: 2),
+                                        _buildItemInfoWidget('Shovel', _inventory['Shovel'] ?? 0),
+                                    ],
+                                 ),
                                ),
                                SizedBox(height: 8),
                                Text(
@@ -1071,7 +1194,6 @@ class _GameScreenState extends State<GameScreen> {
                                  textAlign: TextAlign.center,
                                ),
                                SizedBox(height: 8),
-
                                Row(
                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                  children: [
@@ -1082,7 +1204,6 @@ class _GameScreenState extends State<GameScreen> {
                                      icon: Icons.spa,
                                      statusColor: _getHealthColor(_cropHealth),
                                    )),
-                                   Flexible(child: Text("(${_getCropStatusText(_cropHealth)})", style: TextStyle(color: Colors.white70, fontSize: 12, fontFamily: 'Futehodo-MaruGothic_1.00'), overflow: TextOverflow.ellipsis)),
                                  ],
                                ),
                            ],
@@ -1096,33 +1217,31 @@ class _GameScreenState extends State<GameScreen> {
 
   Widget _buildWeatherImageOverlayWidget() {
       String? weatherImagePath = _getWeatherImageAsset(_currentWeatherEvent);
-      if (weatherImagePath == null || !_showWeatherImageOverlay) {
+      if (weatherImagePath == null) {
           return const SizedBox.shrink();
       }
 
-      return Center(
-        child: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.6),
-                borderRadius: BorderRadius.circular(10)
-            ),
-            child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                    Text("Weather Event", style: TextStyle(color: Colors.white70, fontSize: 12, fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center,),
-                    SizedBox(height: 4),
-                    Image.asset(
-                        weatherImagePath,
-                        width: 60,
-                        height: 60,
-                        errorBuilder: (context, error, stackTrace) => Icon(Icons.cloud_queue, size: 60, color: Colors.white),
-                    ),
-                    SizedBox(height: 4),
-                    Text(_currentWeatherEvent ?? 'Unknown', textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Futehodo-MaruGothic_1.00')),
-                ],
-            ),
-        ),
+      return Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.6),
+              borderRadius: BorderRadius.circular(10)
+          ),
+          child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                  Text("Weather Event", style: TextStyle(color: Colors.white70, fontSize: 12, fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center,),
+                  SizedBox(height: 4),
+                  Image.asset(
+                      weatherImagePath,
+                      width: 60,
+                      height: 60,
+                      errorBuilder: (context, error, stackTrace) => Icon(Icons.cloud_queue, size: 60, color: Colors.white),
+                  ),
+                  SizedBox(height: 4),
+                  Text(_currentWeatherEvent ?? 'Unknown', textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Futehodo-MaruGothic_1.00')),
+              ],
+          ),
       );
   }
 
@@ -1190,14 +1309,13 @@ class _GameScreenState extends State<GameScreen> {
       case GameStage.harvesting:
         WidgetsBinding.instance.addPostFrameCallback((_) async {
           if(_currentStage == GameStage.harvesting && mounted) {
-              await Future.delayed(const Duration(milliseconds: 1000));
+              await Future.delayed(const Duration(milliseconds: 1500));
               if(mounted) {
                   _calculateHarvest();
               }
           }
         });
-
-        return _paperContainer(
+         return _paperContainer(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -1205,7 +1323,7 @@ class _GameScreenState extends State<GameScreen> {
               SizedBox(height: 10),
               CircularProgressIndicator(color: Colors.white),
               SizedBox(height: 10),
-              Text("Calculating results...", style: TextStyle(color: Colors.white70, fontSize: 16, fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center,),
+              Text("Gathering crops and calculating results...", style: TextStyle(color: Colors.white70, fontSize: 16, fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center,),
             ],
           ),
         );
@@ -1228,6 +1346,7 @@ class _GameScreenState extends State<GameScreen> {
   Widget _buildIntro() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
         _paperContainer(
           padding: const EdgeInsets.all(20),
@@ -1251,8 +1370,12 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildTerrainSelection() {
+    if (_terrainDescriptions.isEmpty) {
+         return _paperContainer(child: Text("Error: No terrain options available!", style: TextStyle(color: Colors.red, fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center,));
+    }
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
         _paperContainer(child: Text("Select Terrain", style: TextStyle(fontSize: 24, fontFamily: 'Futehodo-MaruGothic_1.00', color: Colors.white), textAlign: TextAlign.center,)),
         const SizedBox(height: 30),
@@ -1260,20 +1383,24 @@ class _GameScreenState extends State<GameScreen> {
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: _styledButton(
             "${entry.key} \n(${entry.value})",
-                () => _selectTerrain(entry.key),
+                _isProcessingSelection ? null : () => _selectTerrain(entry.key),
             isMultiLine: true,
           ),
-        )).toList(),
+        )),
       ],
     );
   }
 
   Widget _buildSeedSelection() {
     if (_availableSeedKeys.isEmpty) {
-         return _paperContainer(child: Text("No seeds available this season!", style: TextStyle(color: Colors.red, fontFamily: 'Futehodo-MaruGothic_1.00')));
+         return _paperContainer(child: Text("Error: No seeds available this season!", style: TextStyle(color: Colors.red, fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center,));
     }
 
     final availableSeedData = _availableSeedKeys.map((key) => _seedInfo[key]).whereType<SeedData>().toList();
+    if (availableSeedData.isEmpty) {
+       return _paperContainer(child: Text("Error: Could not load seed data!", style: TextStyle(color: Colors.red, fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center,));
+    }
+
     List<Widget> seedButtons = [];
     for (int i = 0; i < availableSeedData.length; i += 2) {
       List<Widget> rowChildren = [];
@@ -1281,7 +1408,7 @@ class _GameScreenState extends State<GameScreen> {
           Flexible(
               child: _styledButton(
                   availableSeedData[i].name,
-                      () => _selectSeed(availableSeedData[i].name)
+                      _isProcessingSelection ? null : () => _selectSeed(availableSeedData[i].name)
               ),
           )
       );
@@ -1291,7 +1418,7 @@ class _GameScreenState extends State<GameScreen> {
              Flexible(
                  child: _styledButton(
                      availableSeedData[i + 1].name,
-                         () => _selectSeed(availableSeedData[i + 1].name)
+                         _isProcessingSelection ? null : () => _selectSeed(availableSeedData[i + 1].name)
                  ),
              )
          );
@@ -1301,7 +1428,7 @@ class _GameScreenState extends State<GameScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: rowChildren,
       ));
-      if (i + 2 < availableSeedData.length) {
+      if (i + 2 <= availableSeedData.length) {
           seedButtons.add(const SizedBox(height: 10));
       }
     }
@@ -1319,7 +1446,6 @@ class _GameScreenState extends State<GameScreen> {
         ),
         const SizedBox(height: 30),
         ...seedButtons,
-        const SizedBox(height: 20),
       ],
     );
   }
@@ -1331,6 +1457,7 @@ class _GameScreenState extends State<GameScreen> {
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
         _paperContainer(
           child: Text(
@@ -1353,7 +1480,7 @@ class _GameScreenState extends State<GameScreen> {
         ),
         SizedBox(height: 10),
         _styledButton(
-            "Prepare Soil (₱10, Requires Shovel)",
+            "Prepare Soil (₱10, Use 1x Shovel)",
             canPrepareSoil ? () => _handleDailyAction(DailyAction.prepareSoil) : null,
         ),
         SizedBox(height: 10),
@@ -1410,14 +1537,14 @@ class _GameScreenState extends State<GameScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text("Weather Alert!", style: TextStyle(fontSize: 24, color: Colors.orangeAccent, fontFamily: 'Futehodo-MaruGothic_1.00', fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
+            Text("Weather Alert!", style: TextStyle(fontSize: 24, color: const Color.fromARGB(255, 244, 0, 0), fontFamily: 'Futehodo-MaruGothic_1.00', fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
             SizedBox(height: 10),
             if(_currentWeatherHint != null)
               Text(_currentWeatherHint!, style: TextStyle(fontSize: 16, color: Colors.white70, fontStyle: FontStyle.italic, fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center),
             SizedBox(height: 15),
             Text("Incoming Event: ${_currentWeatherEvent ?? 'Loading...'}", style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center),
             SizedBox(height: 25),
-            _styledButton("Prepare!", () => setState(() => _currentStage = GameStage.playerWeatherAction)),
+            _styledButton("Respond to Weather!", () => setState(() => _currentStage = GameStage.playerWeatherAction)),
           ],
         )
     );
@@ -1426,6 +1553,7 @@ class _GameScreenState extends State<GameScreen> {
   Widget _buildPlayerWeatherActionScreen() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
         _paperContainer(
           child: Text(
@@ -1444,6 +1572,7 @@ class _GameScreenState extends State<GameScreen> {
               hintText: "Type your action (e.g., 'water', 'secure crops')",
               hintStyle: TextStyle(color: Colors.black45, fontFamily: 'Futehodo-MaruGothic_1.00'),
               border: InputBorder.none,
+              contentPadding: EdgeInsets.zero,
             ),
             onSubmitted: (_) => _processPlayerWeatherAction(),
           ),
@@ -1476,7 +1605,7 @@ class _GameScreenState extends State<GameScreen> {
               style: TextStyle(
                   fontSize: 20,
                   color: _aiJudgement == AIJudgementCategory.smartAndEffective ? Colors.greenAccent :
-                  _aiJudgement == AIJudgementCategory.ineffectiveOrTooLate ? Colors.orangeAccent : Colors.yellowAccent,
+                  _aiJudgement == AIJudgementCategory.ineffectiveOrTooLate ? const Color.fromARGB(255, 197, 73, 2) : Colors.yellowAccent,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Futehodo-MaruGothic_1.00'
               ),
@@ -1539,52 +1668,56 @@ class _GameScreenState extends State<GameScreen> {
     bool showContinueButton = _gameOutcome != "Failed Season" && canContinueSeason;
 
 
-    return _paperContainer(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            if (harvestImagePath != null)
-               Image.asset(
-                  harvestImagePath,
-                  height: 60,
-                  errorBuilder: (context, error, stackTrace) => Text("Summary", style: TextStyle(fontSize: 28, color: Colors.amber, fontFamily: 'Futehodo-MaruGothic_1.00', fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
-                  alignment: Alignment.center,
-               )
-            else
-               Text("Summary", style: TextStyle(fontSize: 28, color: Colors.amber, fontFamily: 'Futehodo-MaruGothic_1.00', fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
+    return Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+           if (harvestImagePath != null)
+             Image.asset(
+                harvestImagePath,
+                height: 60,
+                errorBuilder: (context, error, stackTrace) => Text("Summary", style: TextStyle(fontSize: 28, color: Colors.amber, fontFamily: 'Futehodo-MaruGothic_1.00', fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
+                alignment: Alignment.center,
+             )
+          else
+             Text("Summary", style: TextStyle(fontSize: 28, color: Colors.amber, fontFamily: 'Futehodo-MaruGothic_1.00', fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
 
-            SizedBox(height:15),
+          SizedBox(height:15),
 
-            Text(tip, style: TextStyle(fontSize: 18, color: Colors.white70, fontStyle: FontStyle.italic, fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center),
-            SizedBox(height: 15),
-            Divider(color: Colors.white54, height: 20, thickness: 1),
+          _paperContainer(
+            padding: const EdgeInsets.all(12),
+            child: Text(tip, style: TextStyle(fontSize: 18, color: Colors.white70, fontStyle: FontStyle.italic, fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center),
+          ),
+          SizedBox(height: 15),
+          Divider(color: Colors.white54, height: 20, thickness: 1),
 
-            Text("Last Season Summary:", style: TextStyle(fontSize: 18, color: const Color.fromARGB(255, 51, 162, 75), fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center,),
-            SizedBox(height: 8),
-            Text("Crop Quality: $_cropQuality", style: TextStyle(fontSize: 18, color: _cropQuality == "Excellent" ? Colors.greenAccent : (_cropQuality == "Failed" ? Colors.redAccent : Colors.yellowAccent), fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center,),
-            SizedBox(height: 4),
-            Text("Profit / Loss: ₱$_profitOrLoss", style: TextStyle(fontSize: 20, color: _profitOrLoss >= 0 ? Colors.green : Colors.red, fontWeight: FontWeight.bold, fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center,),
-             SizedBox(height: 4),
-            Text("Current Money: ₱$_money", style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center,),
-            SizedBox(height: 4),
-            Text("Overall Outcome: $_gameOutcome", style: TextStyle(fontSize: 22, color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center,),
+          _paperContainer(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                 Text("Last Season Summary:", style: TextStyle(fontSize: 18, color: const Color.fromARGB(255, 51, 162, 75), fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center,),
+                 SizedBox(height: 8),
+                 Text("Crop Quality: $_cropQuality", style: TextStyle(fontSize: 18, color: _cropQuality == "Excellent" ? Colors.greenAccent : (_cropQuality == "Failed" ? Colors.redAccent : Colors.yellowAccent), fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center,),
+                 SizedBox(height: 4),
+                 Text("Profit / Loss: ₱$_profitOrLoss", style: TextStyle(fontSize: 20, color: _profitOrLoss >= 0 ? Colors.green : Colors.red, fontWeight: FontWeight.bold, fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center,),
+                  SizedBox(height: 4),
+                 Text("Current Money: ₱$_money", style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center,),
+                 SizedBox(height: 4),
+                 Text("Overall Outcome: $_gameOutcome", style: TextStyle(fontSize: 22, color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Futehodo-MaruGothic_1.00'), textAlign: TextAlign.center,),
+              ],
+            ),
+          ),
 
-            SizedBox(height:25),
-            if(showContinueButton) ...[
-              _styledButton("Continue Planting (New Season)", _resetGameForContinue),
-              SizedBox(height: 10),
-            ],
-            _styledButton("End Game (Back to Home)", _goToHomeScreen),
+
+          SizedBox(height:25),
+          if(showContinueButton) ...[
+            _styledButton("Continue Planting (New Season)", _isProcessingSelection ? null : _resetGameForContinue),
+            SizedBox(height: 10),
           ],
-        )
+          _styledButton("End Game (Back to Home)", _isProcessingSelection ? null : _goToHomeScreen),
+        ],
     );
-  }
-
-
-  Widget _buildLoadingToHomeScreen() {
-      return const SizedBox.shrink();
   }
 
 
@@ -1597,8 +1730,9 @@ class _GameScreenState extends State<GameScreen> {
           padding: EdgeInsets.symmetric(horizontal: isMultiLine ? 12 : 24, vertical: isMultiLine ? 10: 12),
           minimumSize: Size(150, 40),
           foregroundColor: onPressed != null ? Colors.white : Colors.white54,
-          backgroundColor: onPressed != null ? Colors.transparent : Colors.black.withOpacity(0.1),
+          backgroundColor: Colors.transparent,
           disabledForegroundColor: Colors.white54,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
         ),
         child: Text(
           label,
@@ -1639,11 +1773,10 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-
   Color _getHealthColor(double health){
-    if(health > 75) return Colors.greenAccent.withOpacity(0.8);
-    if(health > 45) return Colors.orangeAccent.withOpacity(0.8);
-    return Colors.redAccent.withOpacity(0.8);
+    if(health > 75) return Colors.greenAccent.withOpacity(0.9);
+    if(health > 45) return Colors.orangeAccent.withOpacity(0.9);
+    return Colors.redAccent.withOpacity(0.9);
   }
 
   String _getCropStatusText(double health) {
@@ -1655,8 +1788,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _uiInfoChip(String text, {IconData? icon, Color? statusColor}) {
-    return Expanded(
-      child: Container(
+    return Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         margin: const EdgeInsets.symmetric(horizontal: 2),
         decoration: BoxDecoration(
@@ -1679,7 +1811,6 @@ class _GameScreenState extends State<GameScreen> {
             ),
           ],
         ),
-      ),
     );
   }
 

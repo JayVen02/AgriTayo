@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:agritayo/models/product.dart';
-import 'message_screen.dart';
 import 'profile_screen.dart';
+import 'private_chat_screen.dart';
 
 class MarketplaceListView extends StatefulWidget {
   const MarketplaceListView({super.key});
@@ -20,7 +20,7 @@ class _MarketplaceListViewState extends State<MarketplaceListView> {
       return 'Name';
     }
     final parts = fullName.split(' ');
-    return parts.isNotEmpty ? parts[0] : 'Name'; 
+    return parts.isNotEmpty ? parts[0] : 'Name';
   }
 
   @override
@@ -60,10 +60,10 @@ class _MarketplaceListViewState extends State<MarketplaceListView> {
                         onTap: () {
                            Navigator.push(
                              context,
-                             MaterialPageRoute(builder: (context) => const ProfileScreen()), 
+                             MaterialPageRoute(builder: (context) => const ProfileScreen()),
                            );
                         },
-                        child: Row( 
+                        child: Row(
                           children: [
                             CircleAvatar(
                               radius: 16,
@@ -102,14 +102,15 @@ class _MarketplaceListViewState extends State<MarketplaceListView> {
                         Container(
                           height: 100,
                           color: Colors.orange[300],
-                          child: const Center(child: Text("Graph Here")),
+                          child: const Center(child: Text("Demand Graph Here")),
                         ),
                         const SizedBox(height: 8),
-                        const Text("Demand for Potatoes"),
+                        const Text("Demand for Potatoes (Tap to expand)"),
                       ],
                     ),
                   ),
                 ),
+
 
                 Expanded(
                   child: Container(
@@ -129,10 +130,10 @@ class _MarketplaceListViewState extends State<MarketplaceListView> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const TextField(
-                            decoration: InputDecoration(
+                             decoration: InputDecoration(
                               hintText: "Search",
                               border: InputBorder.none,
-                            ),
+                             ),
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -188,7 +189,6 @@ class _MarketplaceListViewState extends State<MarketplaceListView> {
   Widget _buildItemRow(Product product, BuildContext context) {
     return InkWell(
       onTap: () {
-        print("${product.name} tapped");
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => MarketplaceDetailView(product: product)),
@@ -199,8 +199,10 @@ class _MarketplaceListViewState extends State<MarketplaceListView> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(product.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-            Text(product.price, style: const TextStyle(fontSize: 16)),
+            Expanded(
+               child: Text(product.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+            ),
+            Text("₱${product.price}", style: const TextStyle(fontSize: 16)),
           ],
         ),
       ),
@@ -208,25 +210,37 @@ class _MarketplaceListViewState extends State<MarketplaceListView> {
   }
 }
 
-class MarketplaceDetailView extends StatefulWidget { 
+class MarketplaceDetailView extends StatefulWidget {
   final Product product;
 
   const MarketplaceDetailView({super.key, required this.product});
 
   @override
-  _MarketplaceDetailViewState createState() => _MarketplaceDetailViewState(); 
+  _MarketplaceDetailViewState createState() => _MarketplaceDetailViewState();
 }
 
 class _MarketplaceDetailViewState extends State<MarketplaceDetailView> {
    final User? currentUser = FirebaseAuth.instance.currentUser;
+   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  String _getFirstName(String? fullName) {
-    if (fullName == null || fullName.isEmpty) {
-      return 'Name';
-    }
-    final parts = fullName.split(' ');
-    return parts.isNotEmpty ? parts[0] : 'Name';
-  }
+   String _getFirstName(String? fullName) {
+     if (fullName == null || fullName.isEmpty) {
+       return 'Name';
+     }
+     final parts = fullName.split(' ');
+     return parts.isNotEmpty ? parts[0] : 'Name';
+   }
+
+   Future<Map<String, dynamic>?> _fetchSellerDetails(String sellerId) async {
+     if (sellerId.isEmpty) return null;
+     try {
+       DocumentSnapshot doc = await _firestore.collection('users').doc(sellerId).get();
+       return doc.data() as Map<String, dynamic>?;
+     } catch (e) {
+       return null;
+     }
+   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -271,7 +285,7 @@ class _MarketplaceDetailViewState extends State<MarketplaceDetailView> {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const ProfileScreen()), 
+                            MaterialPageRoute(builder: (context) => const ProfileScreen()),
                           );
                         },
                         child: Row(
@@ -319,7 +333,7 @@ class _MarketplaceDetailViewState extends State<MarketplaceDetailView> {
                                 color: const Color(0xFFE8E8E8),
                                 border: Border.all(color: const Color(0xFFECECEC), width: 5),
                                 borderRadius: BorderRadius.circular(16),
-                                image: widget.product.imageUrl.isNotEmpty 
+                                image: widget.product.imageUrl.isNotEmpty
                                     ? DecorationImage(
                                         image: NetworkImage(widget.product.imageUrl),
                                         fit: BoxFit.cover,
@@ -341,12 +355,12 @@ class _MarketplaceDetailViewState extends State<MarketplaceDetailView> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    widget.product.name, 
+                                    widget.product.name,
                                     style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    widget.product.price,
+                                    "₱${widget.product.price}",
                                     style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black87),
                                   ),
                                   const SizedBox(height: 16),
@@ -354,6 +368,41 @@ class _MarketplaceDetailViewState extends State<MarketplaceDetailView> {
                                     widget.product.description,
                                     style: const TextStyle(fontSize: 15, color: Colors.black54),
                                   ),
+                                   FutureBuilder<Map<String, dynamic>?>(
+                                      future: _fetchSellerDetails(widget.product.sellerId),
+                                      builder: (context, snapshot) {
+                                         if (snapshot.connectionState == ConnectionState.waiting) {
+                                            return const Padding(
+                                               padding: EdgeInsets.only(top: 16.0),
+                                               child: Text("Seller: Loading...", style: TextStyle(fontSize: 14, color: Colors.black54)),
+                                            );
+                                         }
+                                         if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {
+                                            return const Padding(
+                                                padding: EdgeInsets.only(top: 16.0),
+                                                child: Text("Seller: Info not available", style: TextStyle(fontSize: 14, color: Colors.black54)),
+                                            );
+                                         }
+                                         final sellerData = snapshot.data!;
+                                         return Padding(
+                                            padding: const EdgeInsets.only(top: 16.0),
+                                            child: Column(
+                                               crossAxisAlignment: CrossAxisAlignment.start,
+                                               children: [
+                                                  Text(
+                                                     "Seller: ${sellerData['name'] ?? 'Unnamed Seller'}",
+                                                     style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.blueGrey),
+                                                  ),
+                                                  Text(
+                                                     "Location: ${sellerData['location'] ?? 'Location not set'}",
+                                                     style: TextStyle(fontSize: 14, color: Colors.blueGrey[600]),
+                                                  ),
+                                               ],
+                                            ),
+                                         );
+                                      },
+                                   ),
+
                                 ],
                               ),
                             ),
@@ -367,6 +416,12 @@ class _MarketplaceDetailViewState extends State<MarketplaceDetailView> {
                               children: [
                                 ElevatedButton(
                                   onPressed: () {
+                                     if (currentUser != null && currentUser!.uid == widget.product.sellerId) {
+                                         ScaffoldMessenger.of(context).showSnackBar(
+                                             const SnackBar(content: Text("You cannot buy your own product.")),
+                                         );
+                                         return;
+                                     }
                                     showDialog(
                                       context: context,
                                       builder: (_) => Center(
@@ -374,7 +429,7 @@ class _MarketplaceDetailViewState extends State<MarketplaceDetailView> {
                                           backgroundColor: Colors.green,
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                           content: Text(
-                                            "You have purchased ${widget.product.name}", 
+                                            "You have purchased ${widget.product.name}",
                                             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                                             textAlign: TextAlign.center,
                                           ),
@@ -397,11 +452,36 @@ class _MarketplaceDetailViewState extends State<MarketplaceDetailView> {
                                 ),
                                 const SizedBox(height: 16),
                                 ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => const ChatScreen()),
-                                    );
+                                  onPressed: () async {
+                                     if (currentUser != null && currentUser!.uid == widget.product.sellerId) {
+                                         ScaffoldMessenger.of(context).showSnackBar(
+                                             const SnackBar(content: Text("You cannot message yourself.")),
+                                         );
+                                         return;
+                                     }
+                                      if (currentUser == null) {
+                                         ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(content: Text("Please log in to chat.")),
+                                          );
+                                         return;
+                                      }
+                                     final sellerDetails = await _fetchSellerDetails(widget.product.sellerId);
+                                     if (sellerDetails != null) {
+                                         Navigator.push(
+                                           context,
+                                           MaterialPageRoute(
+                                             builder: (context) => PrivateChatScreen(
+                                               recipientUserId: widget.product.sellerId,
+                                               recipientUserName: sellerDetails['name'] ?? 'Unnamed User',
+                                               recipientPhotoUrl: sellerDetails['profileImageUrl'] ?? '',
+                                             ),
+                                           ),
+                                         );
+                                     } else {
+                                         ScaffoldMessenger.of(context).showSnackBar(
+                                             const SnackBar(content: Text("Could not load seller information.")),
+                                         );
+                                     }
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color(0xFFC6C6C6),

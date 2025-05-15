@@ -2,7 +2,7 @@ name: agritayo
 description: "Application for the solution Challenge 2025"
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+1
+version: 1.1.0
 
 environment:
   sdk: ^3.7.2
@@ -87,6 +87,7 @@ flutter:
       - assets\images\pest spray.png
       - assets\images\typhoon.png
       - assets\images\Profile_ManageProducts.png
+      - assets\images\messenger.png
       
 
   # An image asset can refer to one or more resolution-specific "variants", see

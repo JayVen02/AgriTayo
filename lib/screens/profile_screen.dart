@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'message_screen.dart';
-import 'manage_product_screen.dart'; 
+import 'chat_list_screen.dart';
+import 'package:agritayo/screens/manage_product_detail_screen.dart';
 import 'package:agritayo/models/product.dart';
-import 'edit_profile_screen.dart'; 
-import 'product_form_screen.dart'; 
+import 'edit_profile_screen.dart';
+import 'product_form_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -42,7 +42,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       ElevatedButton(
                         onPressed: () {
@@ -66,20 +66,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                       ),
-
-                      GestureDetector(
-                         onTap: () {
-                           Navigator.push(
-                             context,
-                             MaterialPageRoute(builder: (context) => const ChatScreen()),
-                           );
-                         },
-                         child: Image.asset(
-                           'assets/images/message.png',
-                           width: 35,
-                           height: 35,
-                         ),
-                      ),
                     ],
                   ),
                 ),
@@ -89,7 +75,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 StreamBuilder<DocumentSnapshot>(
                   stream: FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).snapshots(),
                   builder: (context, snapshot) {
-                    String displayUserName = currentUser!.displayName ?? 'No Name';
+                     String displayUserName = currentUser!.displayName ?? 'No Name';
                     String displayUserProfileImageUrl = currentUser!.photoURL ?? '';
 
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -182,6 +168,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: Colors.white,
                             shadows: [Shadow(blurRadius: 1, color: Colors.black)],
                           ),
+                          textAlign: TextAlign.center,
+                        ),
+                        Padding(
+                           padding: const EdgeInsets.only(top: 8.0),
+                           child: GestureDetector(
+                             onTap: () {
+                                Navigator.push(
+                                   context,
+                                   MaterialPageRoute(builder: (context) => const ChatListScreen()),
+                                );
+                             },
+                             child: Image.asset(
+                               'assets/images/messenger.png',
+                               width: 50,
+                               height: 50,
+                             ),
+                           ),
                         ),
                       ],
                     );
@@ -189,18 +192,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
 
                 const SizedBox(height: 40),
-
                 Container(
-                  width: 300,
+                   margin: const EdgeInsets.symmetric(horizontal: 24),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF3B340),
                     borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.deepOrange, width: 2),
                   ),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const Text(
                         "Manage Products",
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -210,70 +215,70 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       const SizedBox(height: 10),
                       Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.deepOrange, style: BorderStyle.solid, width: 2),
-                          borderRadius: BorderRadius.circular(12),
-                          color: Colors.transparent,
-                        ),
-                        child: StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance
-                                .collection('products')
-                                .where('sellerId', isEqualTo: currentUser!.uid)
-                                .snapshots(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
-                              return const Center(child: CircularProgressIndicator(strokeWidth: 2.0));
-                            }
-                            if (snapshot.hasError) {
-                              return Center(child: Text('Error loading products: ${snapshot.error}'));
-                            }
-                               if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                               return Row(
-                                 mainAxisAlignment: MainAxisAlignment.center,
-                                 mainAxisSize: MainAxisSize.min,
-                                 children: [
-                                    _buildAddButton(context),
-                                 ],
-                               );
-                               }
+                         padding: const EdgeInsets.all(8),
+                         decoration: BoxDecoration(
+                           border: Border.all(color: Colors.deepOrange, style: BorderStyle.solid, width: 2),
+                           borderRadius: BorderRadius.circular(12),
+                           color: Colors.transparent,
+                         ),
+                          child: StreamBuilder<QuerySnapshot>(
+                            stream: FirebaseFirestore.instance
+                                  .collection('products')
+                                  .where('sellerId', isEqualTo: currentUser!.uid)
+                                  .snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return const Center(child: CircularProgressIndicator(strokeWidth: 2.0));
+                              }
+                              if (snapshot.hasError) {
+                                return Center(child: Text('Error loading products: ${snapshot.error}'));
+                              }
+                              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                                  return Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      _buildAddButton(context),
+                                    ],
+                                  );
+                              }
 
-                            final userProducts = snapshot.data!.docs.map((doc) => Product.fromDocument(doc)).toList();
+                              final userProducts = snapshot.data!.docs.map((doc) => Product.fromDocument(doc)).toList();
 
-                            return SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  ...userProducts.map((product) {
-                                    return Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                                      child: InkWell(
-                                         onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(builder: (context) => ProductFormScreen(product: product)),
-                                            );
-                                         },
-                                        child: CircleAvatar(
-                                          radius: 25,
-                                          backgroundColor: Colors.grey[300],
-                                          backgroundImage: product.imageUrl.isNotEmpty
-                                              ? NetworkImage(product.imageUrl) as ImageProvider<Object>
-                                              : const AssetImage('assets/product_placeholder.png') as ImageProvider<Object>,
-                                          child: product.imageUrl.isEmpty
-                                              ? const Icon(Icons.shopping_bag_outlined, size: 30, color: Colors.black54)
-                                              : null,
+                              return SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    ...userProducts.map((product) {
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                        child: InkWell(
+                                           onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(builder: (context) => ManagedProductDetailScreen(product: product)),
+                                              );
+                                           },
+                                          child: CircleAvatar(
+                                            radius: 25,
+                                            backgroundColor: Colors.grey[300],
+                                            backgroundImage: product.imageUrl.isNotEmpty
+                                                ? NetworkImage(product.imageUrl) as ImageProvider<Object>
+                                                : const AssetImage('assets/product_placeholder.png') as ImageProvider<Object>,
+                                            child: product.imageUrl.isEmpty
+                                                ? const Icon(Icons.shopping_bag_outlined, size: 30, color: Colors.black54)
+                                                : null,
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  }).toList(),
-                                  _buildAddButton(context),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
+                                      );
+                                    }),
+                                    _buildAddButton(context),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
                       ),
                     ],
                   ),
