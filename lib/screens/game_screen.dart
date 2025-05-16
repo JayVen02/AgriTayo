@@ -457,10 +457,6 @@ class _GameScreenState extends State<GameScreen> {
      if (!mounted) return;
      setState(() {
        _isProcessingSelection = true;
-     });
-
-    if (!mounted) return;
-     setState(() {
        _currentStage = GameStage.terrainSelection;
      });
     _logGameState('Action', eventDetails: 'Skipped Intro');
@@ -479,24 +475,20 @@ class _GameScreenState extends State<GameScreen> {
        return;
     }
 
-     if (!mounted) return;
-     setState(() {
-       _isProcessingSelection = true;
-     });
-
-    _generateRandomSeedOptions();
-
     if (!mounted) return;
     setState(() {
+      _isProcessingSelection = true;
+      _generateRandomSeedOptions();
       _selectedTerrain = terrain;
       _currentStage = GameStage.seedSelection;
     });
+
     _logGameState('Action', eventDetails: 'Selected Terrain: $terrain');
     _logGameState('StageChange', eventDetails: 'Seed Selection');
 
-    await Future.delayed(const Duration(milliseconds: 100));
-
     await _saveGameState();
+
+    await Future.delayed(const Duration(milliseconds: 100));
 
     if (!mounted) return;
      setState(() {
@@ -530,28 +522,25 @@ class _GameScreenState extends State<GameScreen> {
      if (!mounted) return;
      setState(() {
        _isProcessingSelection = true;
+       _selectedSeedData = _seedInfo[seedKey];
+       _totalInvestment = 0;
+       _currentDay = 1;
+       _cropHealth = 100.0;
+       _inventory = {
+         'Fertilizer': 2,
+         'Pest Spray': 2,
+         'Shovel': 1,
+       };
+       _cropStatusMessage = "Planted ${_selectedSeedData!.name}! Day $_currentDay";
+       _currentStage = GameStage.dailyCycle;
      });
-
-    if (!mounted) return;
-    setState(() {
-      _selectedSeedData = _seedInfo[seedKey];
-      _totalInvestment = 0;
-      _currentDay = 1;
-      _cropHealth = 100.0;
-      _inventory = {
-        'Fertilizer': 2,
-        'Pest Spray': 2,
-        'Shovel': 1,
-      };
-      _cropStatusMessage = "Planted ${_selectedSeedData!.name}! Day $_currentDay";
-      _currentStage = GameStage.dailyCycle;
-    });
-
-    await Future.delayed(const Duration(milliseconds: 100));
 
     _logGameState('Action', eventDetails: 'Selected Seed: $seedKey. New Season Started.');
     _logGameState('StageChange', eventDetails: 'Daily Cycle');
+
     await _saveGameState();
+
+    await Future.delayed(const Duration(milliseconds: 100));
 
      if (!mounted) return;
      setState(() {
@@ -984,27 +973,20 @@ class _GameScreenState extends State<GameScreen> {
     if (!mounted) return;
      setState(() {
        _isProcessingSelection = true;
-     });
-
-    _generateRandomSeedOptions();
-
-    if (!mounted) return;
-    setState(() {
-      _currentStage = GameStage.terrainSelection;
-      _selectedTerrain = null;
-      _selectedSeedData = null;
-      _currentDay = 1;
-      _cropHealth = 100.0;
-      _cropStatusMessage = "Ready for a new season!";
-      _totalInvestment = 0;
-      _inventory = _inventory;
-
-      _cropQuality = "Unknown";
-      _harvestValue = 0;
-      _profitOrLoss = 0;
-      _gameOutcome = "";
-
+       _generateRandomSeedOptions();
+       _currentStage = GameStage.terrainSelection;
+       _selectedTerrain = null;
+       _selectedSeedData = null;
+       _currentDay = 1;
+       _cropHealth = 100.0;
+       _cropStatusMessage = "Ready for a new season!";
+       _totalInvestment = 0;
+       _cropQuality = "Unknown";
+       _harvestValue = 0;
+       _profitOrLoss = 0;
+       _gameOutcome = "";
     });
+
      _logGameState('GameReset', eventDetails: 'Starting a new season. Money: ₱$_money, Inventory: $_inventory');
      _logGameState('StageChange', eventDetails: 'Terrain Selection (New Season)');
      await _saveGameState();
@@ -1023,16 +1005,14 @@ class _GameScreenState extends State<GameScreen> {
      if (!mounted) return;
      setState(() {
        _isProcessingSelection = true;
+       _currentStage = GameStage.loadingToHome;
      });
 
      _logGameState('AppQuitIntent', eventDetails: 'Returning to Home Screen from Tips');
-     await _clearSaveFile();
-
-     if (!mounted) return;
-     setState(() {
-       _currentStage = GameStage.loadingToHome;
-     });
      _logGameState('StageChange', eventDetails: 'Loading to Home Screen');
+
+     await _clearSaveFile();
+     await _saveGameState();
 
      WidgetsBinding.instance.addPostFrameCallback((_) async {
         await Future.delayed(const Duration(seconds: 1));

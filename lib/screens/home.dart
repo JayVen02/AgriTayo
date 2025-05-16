@@ -38,7 +38,7 @@ class HomeScreen extends StatelessWidget {
                 Column(
                   children: [
                     PressableMenuButton(
-                      text: 'Play game',
+                      text: 'AgriLaro',
                       onPressed: () {
                         Navigator.pushNamed(context, '/game');
                       },

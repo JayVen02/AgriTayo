@@ -132,7 +132,7 @@ class ManagedProductDetailScreen extends StatelessWidget {
                                    )),
                                const SizedBox(width: 16),
                                 Text(
-                                  product.price,
+                                  "php ${product.price}",
                                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                                 ),
                              ],

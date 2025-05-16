@@ -1,9 +1,8 @@
-// lib/models/product.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Product {
   final String id;
-  final String sellerId; // Add sellerId
+  final String sellerId;
   final String name;
   final String price;
   final String description;
@@ -11,7 +10,7 @@ class Product {
 
   Product({
     required this.id,
-    required this.sellerId, // Require sellerId
+    required this.sellerId, 
     required this.name,
     required this.price,
     required this.description,
@@ -19,13 +18,13 @@ class Product {
   });
 
   factory Product.fromDocument(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>?; // Handle null data
+    final data = doc.data() as Map<String, dynamic>?; 
      if (data == null) {
        throw StateError('Product document is null or empty');
      }
     return Product(
       id: doc.id,
-      sellerId: data['sellerId'] ?? '', // Add sellerId
+      sellerId: data['sellerId'] ?? '',
       name: data['name'] ?? 'No Name',
       price: data['price'] ?? 'N/A',
       description: data['description'] ?? 'No description available.',
@@ -35,7 +34,7 @@ class Product {
 
   Map<String, dynamic> toMap() {
     return {
-      'sellerId': sellerId, // Include sellerId
+      'sellerId': sellerId,
       'name': name,
       'price': price,
       'description': description,

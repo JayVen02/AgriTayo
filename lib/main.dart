@@ -18,7 +18,6 @@ import './screens/game_screen.dart';
 import './screens//marketplace_screen.dart';
 import './screens/profile_screen.dart';
 import 'screens/chat_list_screen.dart';
-import 'screens/edit_profile_screen.dart';
 import 'screens/add_product_screen.dart';
 import 'screens/product_form_screen.dart';
 
@@ -64,7 +63,6 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => const ProfileScreen(),
         '/chat': (context) => const ChatListScreen(),
         '/manage_product_detail': (context) => const ProductFormScreen(),
-        '/edit_profile': (context) => const EditProfileScreen(),
         '/add_product': (context) => const AddProductScreen(),
       },
     );
